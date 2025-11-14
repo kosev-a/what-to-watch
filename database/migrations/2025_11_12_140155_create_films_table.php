@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('films', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('imdbid')->unique();
             $table->string('name');
             $table->string('poster_image')->nullable();
             $table->string('preview_image')->nullable();
@@ -22,11 +22,12 @@ return new class extends Migration
             $table->integer('scores_count')->default(0);
             $table->string('director')->nullable();
             $table->integer('run_time')->nullable();
-            $table->string('genre')->nullable();
             $table->integer('released')->nullable();
             $table->string('video_link')->nullable();
             $table->string('previewVideoLink')->nullable();
             $table->boolean('isPromo')->default(false);
+            $table->enum('status', ['pending', 'moderate', 'ready'])->default('pending');
+            $table->timestamps();
         });
     }
 
