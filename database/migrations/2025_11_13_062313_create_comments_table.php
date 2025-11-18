@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('film_id')
                 ->constrained('films')
                 ->cascadeOnDelete();
+            $table->mediumText('comment');
             $table->timestamps();
         });
     }

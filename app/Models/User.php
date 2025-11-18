@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Comment;
 
 class User extends Authenticatable
 {
@@ -44,5 +46,37 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // public function comments(): HasMany
+    // {
+    //     return $this->hasMany(Comment::class);
+    // }
+
+    // public function favoriteFilm(): HasMany
+    // {
+    //     return $this->hasMany(FavoriteFilm::class);
+    // }
+
+    //отношение рейтинг
+    public function rating() : HasMany 
+    {
+        return $this->hasMany(Film::class, 'raing', 'user_id', 'film_id')
+            ->withPivot('rating')
+            ->withTimestamps();
+    }
+
+    //отношение комментарии
+    public function comments() : HasMany 
+    {
+        return $this->hasMany(Film::class, 'comments', 'user_id', 'film_id')
+            ->withPivot('comment')
+            ->withTimestamps();
+    }
+
+        // отношение избранное
+    public function favoriteFilm(): HasMany
+    {
+        return $this->hasMany(Film::class, 'favorite_films', 'user_id', 'film_id');
     }
 }

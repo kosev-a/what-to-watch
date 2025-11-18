@@ -16,7 +16,6 @@ return new class extends Migration
             $table
                 ->enum('name', ['comedy', 'crime', 'documentory', 'drama', 'horror', 'kids_and_family', 'romance', 'sci-fi', 'thriller'])
                 ->nullable();
-            $table->foreignId('film_id')->constrained('films')->cascadeOnDelete();
         });
     }
 
