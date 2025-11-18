@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('run_time')->nullable();
             $table->integer('released')->nullable();
             $table->string('video_link')->nullable();
-            $table->string('previewVideoLink')->nullable();
+            $table->string('preview_video_link')->nullable();
             $table->boolean('isPromo')->default(false);
             $table->enum('status', ['pending', 'moderate', 'ready'])->default('pending');
             $table->timestamps();
