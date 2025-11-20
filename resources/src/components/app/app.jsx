@@ -4,6 +4,7 @@ import {AppRoute} from '../../const';
 import PropTypes from 'prop-types';
 import Main from '../pages/main/main';
 import SignIn from '../pages/signin/signin';
+import SignUp from '../pages/signup/signup';
 import MyList from '../pages/mylist/mylist';
 import Film from '../pages/film/film';
 import Review from '../ui/review/review';
@@ -22,6 +23,7 @@ function App(props) {
           <Main films={films} name={name} genre={genre} year={year} />
         </Route>
         <Route path="/login" exact component={SignIn} />
+        <Route path="/signup" exact component={SignUp} />
         <Route path="/mylist" exact >
           <MyList films={films} />
         </Route>

@@ -1,40 +1,62 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-export default SignIn;
+export default SignUp;
 
-function SignIn() {
+function SignUp() {
     const apiUrl = import.meta.env.VITE_APP_URL;
 
-    const [formData, setFormData] = useState({
+    const [data, setData] = useState({
+        name: "",
         email: "",
         password: "",
+        password_confirmation: "",
     });
+
+    const [file, setFile] = useState(null);
+
+    //обработчик добавления изображения
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
 
     const [message, setMessage] = useState("");
     const [error, setError] = useState(null);
 
     // Обработчик изменения полей формы
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-        
+        setData({ ...data, [e.target.name]: e.target.value });
     };
 
     // Обработчик отправки формы
     const handleSubmit = async (e) => {
         e.preventDefault(); 
+
+        const formData = new FormData();
+        //добавление данных в formData
+        Object.entries(data).forEach(([key, value]) => {
+            formData.append(key, value);
+        });
+        formData.append("image", file);
+
         try {
             // Отправляем POST-запрос с данными формы
-            const response = await axios.post(`${apiUrl}/api/login`, formData);
+            const response = await axios.post(
+                `${apiUrl}/api/register`,
+                formData
+            );
             console.log("Данные успешно отправлены:", response.data);
             setMessage("Форма успешно отправлена!");
             setError(null);
             // Опционально: очистить форму
-            setFormData({ email: "", password: "" });
+            // setFormData({ email: "", password: "" });
+            //todo redirect
         } catch (err) {
             console.error("Ошибка при отправке формы:", err);
             setError("Произошла ошибка при отправке формы.");
             setMessage("");
+        } finally {
+            console.log(formData);
         }
     };
 
@@ -143,11 +165,32 @@ function SignIn() {
                             </span>
                         </a>
                     </div>
-                    <h1 className="page-title user-page__title">Sign in</h1>
+                    <h1 className="page-title user-page__title">Sign Up</h1>
                 </header>
                 <div className="sign-in user-page__content">
-                    <form onSubmit={handleSubmit} className="sign-in__form">
+                    <form
+                        onSubmit={handleSubmit}
+                        // enctype="multipart/form-data"
+                        className="sign-in__form"
+                    >
                         <div className="sign-in__fields">
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="text"
+                                    placeholder="Name"
+                                    name="name"
+                                    id="name"
+                                    onChange={handleChange}
+                                    value={data.name}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="name"
+                                >
+                                    Name
+                                </label>
+                            </div>
                             <div className="sign-in__field">
                                 <input
                                     className="sign-in__input"
@@ -156,7 +199,7 @@ function SignIn() {
                                     name="email"
                                     id="email"
                                     onChange={handleChange}
-                                    value={formData.email}
+                                    value={data.email}
                                 />
                                 <label
                                     className="sign-in__label visually-hidden"
@@ -173,7 +216,7 @@ function SignIn() {
                                     name="password"
                                     id="password"
                                     onChange={handleChange}
-                                    value={formData.password}
+                                    value={data.password}
                                 />
                                 <label
                                     className="sign-in__label visually-hidden"
@@ -182,10 +225,43 @@ function SignIn() {
                                     Password
                                 </label>
                             </div>
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    name="password_confirmation"
+                                    id="password_confirm"
+                                    onChange={handleChange}
+                                    value={data.password_confirmation}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="password_confirm"
+                                >
+                                    Confirm Password
+                                </label>
+                            </div>
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="file"
+                                    name="image"
+                                    id="fileInputId"
+                                    accept="image/png, image/jpeg, image/jpg"
+                                    onChange={handleFileChange}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="fileInputId"
+                                >
+                                    Upload Image
+                                </label>
+                            </div>
                         </div>
                         <div className="sign-in__submit">
                             <button className="sign-in__btn" type="submit">
-                                Sign in
+                                Sign up
                             </button>
                         </div>
                     </form>
