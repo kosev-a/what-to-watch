@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 export default SignIn;
 
-function SignIn() {
+function SignIn({ onLogin }) {
     const apiUrl = import.meta.env.VITE_APP_URL;
+
+    const navigate = useHistory();
 
     const [formData, setFormData] = useState({
         email: "",
@@ -17,20 +20,29 @@ function SignIn() {
     // Обработчик изменения полей формы
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        
     };
 
     // Обработчик отправки формы
     const handleSubmit = async (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         try {
             // Отправляем POST-запрос с данными формы
             const response = await axios.post(`${apiUrl}/api/login`, formData);
             console.log("Данные успешно отправлены:", response.data);
+            const token = response.data.data.token;
+            console.log(token);
+            localStorage.setItem("token", token);
+
+            const userData = response.data.data.name;
+            // onLogin(userData);
+            localStorage.setItem("user", userData);
+            console.log(userData);
+
             setMessage("Форма успешно отправлена!");
             setError(null);
             // Опционально: очистить форму
             setFormData({ email: "", password: "" });
+            navigate.goBack();
         } catch (err) {
             console.error("Ошибка при отправке формы:", err);
             setError("Произошла ошибка при отправке формы.");

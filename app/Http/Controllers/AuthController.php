@@ -57,8 +57,20 @@ class AuthController extends Controller
         }
 
         $token = Auth::user()->createToken('auth-token');
+        $name = Auth::user()->name;
 
-        return $this->success(['token' => $token->plainTextToken]);
+        return $this->success(['token' => $token->plainTextToken, 'name' => $name]);
 
+    }
+
+    /**
+     * Summary of logout
+     * @return \App\Http\Responses\Success
+     */
+    public function logout(): Responsable
+    {
+        Auth::user()->tokens()->delete();
+
+        return $this->success(null, 204);
     }
 }

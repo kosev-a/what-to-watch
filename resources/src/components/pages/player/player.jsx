@@ -1,6 +1,6 @@
 import React from 'react';
 import filmProp from '../../ui/card/card.prop';
-import {useHistory} from 'react-router';
+import {useHistory} from 'react-router-dom';
 
 function Player(props) {
   const {film} = props;
