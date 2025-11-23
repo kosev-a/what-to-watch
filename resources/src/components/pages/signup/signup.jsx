@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 export default SignUp;
 
 function SignUp() {
     const apiUrl = import.meta.env.VITE_APP_URL;
+
+    const navigate = useHistory();
 
     const [data, setData] = useState({
         name: "",
@@ -46,11 +49,25 @@ function SignUp() {
                 formData
             );
             console.log("Данные успешно отправлены:", response.data);
+
+            const data = response.data.data;
+            const token = data.token;
+            console.log(token);
+            localStorage.setItem("token", token);
+
+            const user = data.name;
+            localStorage.setItem("user", user);
+            // console.log(user);
+
+            const avatar = data.avatar;
+            localStorage.setItem("avatar", avatar);
+            console.log(avatar);
+
             setMessage("Форма успешно отправлена!");
             setError(null);
-            // Опционально: очистить форму
-            // setFormData({ email: "", password: "" });
-            //todo redirect
+
+            navigate.goBack();
+
         } catch (err) {
             console.error("Ошибка при отправке формы:", err);
             setError("Произошла ошибка при отправке формы.");
@@ -170,7 +187,6 @@ function SignUp() {
                 <div className="sign-in user-page__content">
                     <form
                         onSubmit={handleSubmit}
-                        // enctype="multipart/form-data"
                         className="sign-in__form"
                     >
                         <div className="sign-in__fields">

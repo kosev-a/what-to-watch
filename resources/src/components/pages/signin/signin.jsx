@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default SignIn;
 
-function SignIn({ onLogin }) {
+function SignIn() {
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const navigate = useHistory();
@@ -29,14 +29,18 @@ function SignIn({ onLogin }) {
             // Отправляем POST-запрос с данными формы
             const response = await axios.post(`${apiUrl}/api/login`, formData);
             console.log("Данные успешно отправлены:", response.data);
-            const token = response.data.data.token;
+            const data = response.data.data;
+            const token = data.token;
             console.log(token);
             localStorage.setItem("token", token);
 
-            const userData = response.data.data.name;
-            // onLogin(userData);
-            localStorage.setItem("user", userData);
-            console.log(userData);
+            const user = data.name;
+            localStorage.setItem("user", user);
+            // console.log(user);
+
+            const avatar = data.avatar;
+            localStorage.setItem("avatar", avatar);
+            console.log(avatar);
 
             setMessage("Форма успешно отправлена!");
             setError(null);

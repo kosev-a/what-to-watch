@@ -38,10 +38,14 @@ class AuthController extends Controller
 
         $user = User::create($params);
         $token = $user->createToken('auth-token');
+        $name = $user->name;
+        $avatar = $user->avatar_path;
 
         return $this->success([
             'user' => $user,
             'token' => $token->plainTextToken,
+            'name'=> $name,
+            'avatar' => $avatar,
         ], 201);
     }
 
@@ -58,8 +62,9 @@ class AuthController extends Controller
 
         $token = Auth::user()->createToken('auth-token');
         $name = Auth::user()->name;
+        $avatar = Auth::user()->avatar_path;
 
-        return $this->success(['token' => $token->plainTextToken, 'name' => $name]);
+        return $this->success(['token' => $token->plainTextToken, 'name' => $name, 'avatar' => $avatar]);
 
     }
 
