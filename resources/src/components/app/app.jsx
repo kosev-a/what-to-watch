@@ -17,6 +17,8 @@ function App(props) {
     const { films, reviews, name, genre, year } = props;
     const [user, setUser] = useState(localStorage.getItem("user")) || null;
     console.log(user);
+    const [avatar, setAvatar] = useState(localStorage.getItem("avatar")) || null;
+    console.log(avatar);
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const handleLogout = async (e) => {
@@ -31,8 +33,10 @@ function App(props) {
             if (response.ok) {
                 // Сервер подтвердил выход, теперь очищаем локальные данные
                 setUser(null);
+                setAvatar(null);
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
+                localStorage.removeItem("avatar");
                 // Перенаправляем пользователя
                 // window.location.href = '/login';
             } else {
@@ -54,6 +58,7 @@ function App(props) {
                         genre={genre}
                         year={year}
                         user={user}
+                        avatar={avatar}
                         onLogout={handleLogout}
                     />
                 </Route>
@@ -72,6 +77,9 @@ function App(props) {
                             film={getFilm(films, data.match.params.id)}
                             films={films}
                             reviews={reviews}
+                            user={user}
+                            avatar={avatar}
+                            onLogout={handleLogout}
                         />
                     )}
                 />

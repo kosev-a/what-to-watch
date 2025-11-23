@@ -10,10 +10,14 @@ export default Main;
 function Main(props) {
     const films = props.films;
     // console.log(props);
-    const { name, genre, year, user, onLogout } = props;
+    const { name, genre, year, user, avatar, onLogout } = props;
 
     const apiUrl = import.meta.env.VITE_APP_URL;
     const loginLink = apiUrl + "/login";
+    const signUpLink = apiUrl + "/signup";
+
+    const avatarSrc =
+        avatar != "null" ? `${apiUrl}/storage/${avatar}` : "img/avatar.jpg";
 
     return (
         <React.Fragment>
@@ -140,7 +144,7 @@ function Main(props) {
                                     <div className="user-block__avatar">
                                         <Link to={AppRoute.MY_LIST}>
                                             <img
-                                                src="img/avatar.jpg"
+                                                src={avatarSrc}
                                                 alt="User avatar"
                                                 width="63"
                                                 height="63"
@@ -152,7 +156,7 @@ function Main(props) {
                                     <form onSubmit={onLogout}>
                                         <button
                                             type="submit"
-                                            className="user-block__link"
+                                            className="user-block__sign-out"
                                         >
                                             Sign out
                                         </button>
@@ -160,14 +164,24 @@ function Main(props) {
                                 </li>
                             </>
                         ) : (
-                            <li className="user-block__item">
-                                <a
-                                    href={loginLink}
-                                    className="user-block__link"
-                                >
-                                    Sign in
-                                </a>
-                            </li>
+                            <>
+                                <li className="user-block__item">
+                                    <a
+                                        href={loginLink}
+                                        className="user-block__link"
+                                    >
+                                        Sign in
+                                    </a>
+                                </li>
+                                <li className="user-block__item">
+                                    <a
+                                        href={signUpLink}
+                                        className="user-block__link"
+                                    >
+                                        Registration
+                                    </a>
+                                </li>
+                            </>
                         )}
                     </ul>
                 </header>

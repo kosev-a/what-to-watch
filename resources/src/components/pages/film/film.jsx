@@ -10,7 +10,7 @@ import { AppRoute, MAX_SIMILAR_FILMS_COUNT } from "../../../const";
 import { getSimilarFilms } from "../../../utils/utils";
 
 function Film(props) {
-    const { film, films, reviews } = props;
+    const { film, films, reviews, user, avatar, onLogout } = props;
     const {
         name,
         posterImage,
@@ -20,6 +20,12 @@ function Film(props) {
         released,
         id,
     } = film;
+    
+    const apiUrl = import.meta.env.VITE_APP_URL;
+    const loginLink = apiUrl + "/login";
+    const signUpLink = apiUrl + "/signup";
+
+    const avatarSrc = avatar != "null" ? `${apiUrl}/storage/${avatar}` : "img/avatar.jpg";
 
     const history = useHistory();
 
@@ -147,21 +153,51 @@ function Film(props) {
                         </div>
 
                         <ul className="user-block">
-                            <li className="user-block__item">
-                                <div className="user-block__avatar">
-                                    <Link to={AppRoute.MY_LIST}>
-                                        <img
-                                            src="img/avatar.jpg"
-                                            alt="User avatar"
-                                            width="63"
-                                            height="63"
-                                        />
-                                    </Link>
-                                </div>
-                            </li>
-                            <li className="user-block__item">
-                                <a className="user-block__link">Sign out</a>
-                            </li>
+                            {user ? (
+                                <>
+                                    <li className="user-block__item">
+                                        <div className="user-block__avatar">
+                                            <Link to={AppRoute.MY_LIST}>
+                                                <img
+                                                    src={avatarSrc}
+                                                    alt="User avatar"
+                                                    width="63"
+                                                    height="63"
+                                                />
+                                            </Link>
+                                        </div>
+                                    </li>
+                                    <li className="user-block__item">
+                                        <form onSubmit={onLogout}>
+                                            <button
+                                                type="submit"
+                                                className="user-block__sign-out"
+                                            >
+                                                Sign out
+                                            </button>
+                                        </form>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                <li className="user-block__item">
+                                    <a
+                                        href={loginLink}
+                                        className="user-block__link"
+                                    >
+                                        Sign in
+                                    </a>
+                                </li>
+                                <li className="user-block__item">
+                                    <a
+                                        href={signUpLink}
+                                        className="user-block__link"
+                                    >
+                                        Registration
+                                    </a>
+                                </li>
+                            </>
+                            )}
                         </ul>
                     </header>
 
