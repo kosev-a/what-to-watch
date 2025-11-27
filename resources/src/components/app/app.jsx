@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import axios from "axios";
 import { AppRoute } from "../../const";
 import PropTypes from "prop-types";
 import Main from "../pages/main/main";
@@ -8,6 +9,7 @@ import SignUp from "../pages/signup/signup";
 import MyList from "../pages/mylist/mylist";
 import Film from "../pages/film/film";
 import Review from "../ui/review/review";
+import ReviewForm from "../ui/review-form/review-form";
 import Player from "../pages/player/player";
 import filmProp from "../ui/card/card.prop";
 import reviewProp from "../ui/review/review.prop";
@@ -16,8 +18,12 @@ import { getFilm, getReviews } from "../../utils/utils";
 function App(props) {
     const { films, reviews, name, genre, year } = props;
     const [user, setUser] = useState(localStorage.getItem("user")) || null;
-    console.log(user);
-    const [avatar, setAvatar] = useState(localStorage.getItem("avatar")) || null;
+
+    const token = localStorage.getItem("token") || null;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    const [avatar, setAvatar] =
+        useState(localStorage.getItem("avatar")) || null;
     console.log(avatar);
     const apiUrl = import.meta.env.VITE_APP_URL;
 
@@ -83,7 +89,7 @@ function App(props) {
                         />
                     )}
                 />
-                <Route
+                {/* <Route
                     exact
                     path={`${AppRoute.FILM}/:id/review`}
                     render={(data) => (
@@ -91,12 +97,19 @@ function App(props) {
                             review={getReviews(reviews, data.match.params.id)}
                         />
                     )}
+                /> */}
+                <Route
+                    exact
+                    path={`${AppRoute.FILM}/:id/add-review`}
+                    render={(data) => (
+                        <ReviewForm film={getFilm(films, data.match.params.id)}/>
+                    )}
                 />
                 <Route
                     exact
                     path={`${AppRoute.PLAYER}/:id`}
                     render={(data) => (
-                        <Player film={getFilm(films, data.match.params.id)} />
+                        <Player />
                     )}
                 />
                 <Route

@@ -7,13 +7,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
-    // public function film(): BelongsTo
-    // {
-    //     return $this->belongsTo(Film::class);
-    // }
+    /**
+     * Summary of fillable
+     * @var array
+     */
+    protected $fillable = [
+        'user_id',
+        'film_id',
+        'comment_id',
+        'text',
+        'rating',
+    ];
 
-    // public function user(): BelongsTo
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
+    public function film(): BelongsTo
+    {
+        return $this->belongsTo(Film::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

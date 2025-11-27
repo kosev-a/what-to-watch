@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('comments', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements("id");
             $table->foreignId('user_id')
                 ->nullable()
                 ->constrained('users')
@@ -20,7 +20,11 @@ return new class extends Migration
             $table->foreignId('film_id')
                 ->constrained('films')
                 ->cascadeOnDelete();
-            $table->mediumText('comment');
+            $table->unsignedBigInteger('comment_id')
+                ->nullable()
+                ->default(null);
+            $table->mediumText('text');
+            $table->integer('rating');
             $table->timestamps();
         });
     }

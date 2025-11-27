@@ -31,16 +31,13 @@ function SignIn() {
             console.log("Данные успешно отправлены:", response.data);
             const data = response.data.data;
             const token = data.token;
-            console.log(token);
             localStorage.setItem("token", token);
 
             const user = data.name;
             localStorage.setItem("user", user);
-            // console.log(user);
 
             const avatar = data.avatar;
             localStorage.setItem("avatar", avatar);
-            console.log(avatar);
 
             setMessage("Форма успешно отправлена!");
             setError(null);

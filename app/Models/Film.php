@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Film extends Model
 {
+    use HasFactory;
     protected $fillable = [
         "imdbid",
         "name",
@@ -45,9 +48,7 @@ class Film extends Model
     // отношение комментарии
     public function comments(): HasMany
     {
-        return $this->hasMany(User::class, 'comments', 'film_id', 'user_id')
-            ->withPivot('comment')
-            ->withTimestamps();
+        return $this->hasMany(Comment::class);
     }
 
     // отношение жанры
