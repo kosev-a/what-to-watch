@@ -32,7 +32,8 @@ Route::apiResource('favorites', FavoriteController::class);
 
 Route::get('/films/{id}/similar', [SimilarFilmController::class, 'index']);
 
-Route::apiResource('comment', CommentController::class);
+Route::post('/films/{id}/comments', [CommentController::class, 'store'])
+    ->middleware('auth:sanctum');
 
 Route::get('/promo', [PromoController::class,'show']);
 Route::post('/promo/{id}', [PromoController::class, 'set']);

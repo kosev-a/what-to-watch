@@ -245,7 +245,7 @@ function Film(props) {
                                 </button>
                                 <Link
                                     className="btn film-card__button"
-                                    to={`${AppRoute.FILM}/${film.id}/review`}
+                                    to={`${AppRoute.FILM}/${film.id}/add-review`}
                                 >
                                     Add review
                                 </Link>

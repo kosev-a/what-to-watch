@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Comment;
 
 class User extends Authenticatable
@@ -35,6 +37,10 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'id',
+        'email_verified_at',
+        'created_at',
+        'updated_at',
     ];
 
     /**
@@ -47,13 +53,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'bool',
         ];
     }
-
-    // public function comments(): HasMany
-    // {
-    //     return $this->hasMany(Comment::class);
-    // }
 
     // public function favoriteFilm(): HasMany
     // {
@@ -69,11 +71,9 @@ class User extends Authenticatable
     }
 
     //отношение комментарии
-    public function comments() : HasMany 
+    public function comments() : BelongsTo
     {
-        return $this->hasMany(Film::class, 'comments', 'user_id', 'film_id')
-            ->withPivot('comment')
-            ->withTimestamps();
+        return $this->belongsTo(Comment::class);
     }
 
         // отношение избранное
