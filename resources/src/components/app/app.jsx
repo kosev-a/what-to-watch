@@ -1,5 +1,5 @@
 import React, { Fragment, useState, useEffect } from "react";
-import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import { AppRoute } from "../../const";
 import PropTypes from "prop-types";
@@ -19,8 +19,8 @@ function App(props) {
     const { films, reviews, name, genre, year } = props;
     const [user, setUser] = useState(localStorage.getItem("user")) || null;
 
-    const token = localStorage.getItem("token") || null;
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    let token = localStorage.getItem("token") || null;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     const [avatar, setAvatar] =
         useState(localStorage.getItem("avatar")) || null;
@@ -43,6 +43,7 @@ function App(props) {
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
                 localStorage.removeItem("avatar");
+                token = null;
                 // Перенаправляем пользователя
                 // window.location.href = '/login';
             } else {
@@ -82,7 +83,7 @@ function App(props) {
                         <Film
                             film={getFilm(films, data.match.params.id)}
                             films={films}
-                            reviews={reviews}
+                            // reviews={reviews}
                             user={user}
                             avatar={avatar}
                             onLogout={handleLogout}
@@ -101,15 +102,21 @@ function App(props) {
                 <Route
                     exact
                     path={`${AppRoute.FILM}/:id/add-review`}
-                    render={(data) => (
-                        <ReviewForm film={getFilm(films, data.match.params.id)}/>
-                    )}
+                    render={(data) =>
+                        user ? (
+                            <ReviewForm
+                                film={getFilm(films, data.match.params.id)}
+                            />
+                        ) : (
+                            <Redirect to="/login" />
+                        )
+                    }
                 />
                 <Route
                     exact
                     path={`${AppRoute.PLAYER}/:id`}
                     render={(data) => (
-                        <Player />
+                        <Player film={getFilm(films, data.match.params.id)} />
                     )}
                 />
                 <Route

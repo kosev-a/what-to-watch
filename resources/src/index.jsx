@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./components/app/app";
 import films from "./mocks/films";
-import reviews from "./mocks/review";
+// import reviews from "./mocks/review";
 
 const nameFilm = "The Grand Budapest Hotel";
 const genreFilm = "Drama";
@@ -12,7 +12,7 @@ ReactDOM.render(
     <React.StrictMode>
                 <App
                     films={films}
-                    reviews={reviews}
+                    // reviews={reviews}
                     name={nameFilm}
                     genre={genreFilm}
                     year={yearFilm}
