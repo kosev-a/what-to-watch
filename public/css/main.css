@@ -939,9 +939,9 @@ main {
 }
 
 .film-card__reviews-col {
-    width: calc((100% - 60px) / 2);
+    width: calc((100% - 60px));
     margin-right: 60px;
-    max-width: 380px;
+    /* max-width: 380px; */
 }
 .film-card__reviews-col:last-child {
     margin-right: 0;

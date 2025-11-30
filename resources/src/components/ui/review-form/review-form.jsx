@@ -40,14 +40,14 @@ function ReviewForm({ film }) {
             );
             console.log("Данные успешно отправлены:", response.data);
 
-            setMessage("Форма успешно отправлена!");
+            setMessage("Комментарий успешно добавлен!");
             setError(null);
             // Опционально: очистить форму
             // setFormData({ email: "", password: "" });
             navigate.goBack();
         } catch (err) {
-            console.error("Ошибка при отправке формы:", err);
-            setError("Произошла ошибка при отправке формы.");
+            console.error("Ошибка при отправке комментария:", err);
+            setError("Произошла ошибка при добавлении комментария.");
             setMessage("");
         }
     };
@@ -94,6 +94,7 @@ function ReviewForm({ film }) {
                     </div>
                 </div>
             </form>
+            <p>{message}{error}</p>
         </div>
     );
 }

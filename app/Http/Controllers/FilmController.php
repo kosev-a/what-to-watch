@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FilmResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Film;
+use Illuminate\Contracts\Support\Responsable;
+use Barryvdh\Debugbar\Facade as Debugbar;
 
 class FilmController extends Controller
 {
@@ -27,7 +32,11 @@ class FilmController extends Controller
      */
     public function show(string $id)
     {
-        return "1";
+        // Загружаем фильм -> комментарии -> пользователей комментариев
+        $film = Film::with("comments.user")->findOrFail($id);
+        // Debugbar::info($film);
+
+        return new FilmResource($film);
     }
 
     // /**
@@ -45,4 +54,14 @@ class FilmController extends Controller
     // {
     //     //
     // }
+
+    public function getComments(int $id)
+    {
+        // $film = Film::find($id);
+
+        // $comments = $film->comments->toArray();
+
+        // // return $comments;
+        // return response()->json($comments);
+    }
 }

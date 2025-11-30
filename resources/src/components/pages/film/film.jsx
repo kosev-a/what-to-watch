@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import filmProp from "../../ui/card/card.prop";
 import reviewProp from "../../ui/review/review.prop";
 import FilmList from "../../ui/film-list/film-list";
@@ -10,7 +11,8 @@ import { AppRoute, MAX_SIMILAR_FILMS_COUNT } from "../../../const";
 import { getSimilarFilms } from "../../../utils/utils";
 
 function Film(props) {
-    const { film, films, reviews, user, avatar, onLogout } = props;
+    // const { film, films, reviews, user, avatar, onLogout } = props;
+    const { film, films, user, avatar, onLogout } = props;
     const {
         name,
         posterImage,
@@ -20,15 +22,53 @@ function Film(props) {
         released,
         id,
     } = film;
-    
+
     const apiUrl = import.meta.env.VITE_APP_URL;
     const loginLink = apiUrl + "/login";
     const signUpLink = apiUrl + "/signup";
 
-    const avatarSrc = avatar != "null" ? `${apiUrl}/storage/${avatar}` : "img/avatar.jpg";
+    const [comments, setComments] = useState([]);
+
+    const [message, setMessage] = useState("");
+    const [error, setError] = useState(null);
+
+    const avatarSrc =
+        avatar != "null" ? `${apiUrl}/storage/${avatar}` : "img/avatar.jpg";
 
     const history = useHistory();
 
+    useEffect(() => {
+        let ignore = false; // Флаг для отслеживания, следует ли игнорировать результат
+
+        (async () => {
+            try {
+                const response = await axios.get(
+                    `${apiUrl}/api/films/${film.id}/comments`
+                );
+                const result = response.data.data;
+                if (!ignore) {
+                    setComments(result.comments); // Устанавливаем состояние только если компонент не был размонтирован
+                    
+                }
+                console.log(result);
+                setMessage("Форма успешно отправлена!");
+                setError(null);
+            } catch (err) {
+                if (!ignore) {
+                    console.error("Ошибка при отправке формы:", err);
+                    setError("Произошла ошибка при отправке формы.");
+                    setMessage("");
+                }
+            }
+        })();
+        // Функция очистки
+        return () => {
+            ignore = true; // Устанавливаем флаг в true при размонтировании компонента или перед следующим запуском эффекта
+        };
+        
+    }, []);
+
+    
     return (
         <React.Fragment>
             <div className="visually-hidden">
@@ -180,23 +220,23 @@ function Film(props) {
                                 </>
                             ) : (
                                 <>
-                                <li className="user-block__item">
-                                    <a
-                                        href={loginLink}
-                                        className="user-block__link"
-                                    >
-                                        Sign in
-                                    </a>
-                                </li>
-                                <li className="user-block__item">
-                                    <a
-                                        href={signUpLink}
-                                        className="user-block__link"
-                                    >
-                                        Registration
-                                    </a>
-                                </li>
-                            </>
+                                    <li className="user-block__item">
+                                        <a
+                                            href={loginLink}
+                                            className="user-block__link"
+                                        >
+                                            Sign in
+                                        </a>
+                                    </li>
+                                    <li className="user-block__item">
+                                        <a
+                                            href={signUpLink}
+                                            className="user-block__link"
+                                        >
+                                            Registration
+                                        </a>
+                                    </li>
+                                </>
                             )}
                         </ul>
                     </header>
@@ -230,25 +270,31 @@ function Film(props) {
                                     </svg>
                                     <span>Play</span>
                                 </button>
-                                <button
-                                    className="btn btn--list film-card__button"
-                                    type="button"
-                                >
-                                    <svg
-                                        viewBox="0 0 19 20"
-                                        width="19"
-                                        height="20"
-                                    >
-                                        <use xmlnsXlink="#add"></use>
-                                    </svg>
-                                    <span>My list</span>
-                                </button>
-                                <Link
-                                    className="btn film-card__button"
-                                    to={`${AppRoute.FILM}/${film.id}/add-review`}
-                                >
-                                    Add review
-                                </Link>
+                                {user ? (
+                                    <>
+                                        <button
+                                            className="btn btn--list film-card__button"
+                                            type="button"
+                                        >
+                                            <svg
+                                                viewBox="0 0 19 20"
+                                                width="19"
+                                                height="20"
+                                            >
+                                                <use xmlnsXlink="#add"></use>
+                                            </svg>
+                                            <span>My list</span>
+                                        </button>
+                                        <Link
+                                            className="btn film-card__button"
+                                            to={`${AppRoute.FILM}/${film.id}/add-review`}
+                                        >
+                                            Add review
+                                        </Link>
+                                    </>
+                                ) : (
+                                    ""
+                                )}
                             </div>
                         </div>
                     </div>
@@ -265,7 +311,7 @@ function Film(props) {
                             />
                         </div>
 
-                        <FilmTabs film={film} reviews={reviews} />
+                        <FilmTabs film={film} reviews={comments} />
                     </div>
                 </div>
             </section>

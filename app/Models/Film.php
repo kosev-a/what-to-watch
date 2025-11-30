@@ -38,12 +38,12 @@ class Film extends Model
     // }
 
     // отношение рейтинг
-    public function rating(): HasMany
-    {
-        return $this->hasMany(User::class, 'rating', 'film_id', 'user_id')
-            ->withPivot('rating')
-            ->withTimestamps();
-    }
+    // public function rating(): HasMany
+    // {
+    //     return $this->hasMany(User::class, 'rating', 'film_id', 'user_id')
+    //         ->withPivot('rating')
+    //         ->withTimestamps();
+    // }
 
     // отношение комментарии
     public function comments(): HasMany
