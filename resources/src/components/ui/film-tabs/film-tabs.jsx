@@ -57,7 +57,7 @@ function FilmTabs(props) {
 
 FilmTabs.propTypes = {
   film: filmProp,
-  reviews: PropTypes.arrayOf(reviewProp).isRequired,
+  // reviews: PropTypes.arrayOf(reviewProp).isRequired,
 };
 
 export default FilmTabs;

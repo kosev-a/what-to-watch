@@ -35,8 +35,8 @@ function FilmTabReviews(props) {
   );
 }
 
-FilmTabReviews.propTypes = {
-  reviews: PropTypes.arrayOf(reviewProp).isRequired,
-};
+// FilmTabReviews.propTypes = {
+//   reviews: PropTypes.arrayOf(reviewProp).isRequired,
+// };
 
 export default FilmTabReviews;

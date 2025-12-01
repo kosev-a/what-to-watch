@@ -8,7 +8,7 @@ import SignIn from "../pages/signin/signin";
 import SignUp from "../pages/signup/signup";
 import MyList from "../pages/mylist/mylist";
 import Film from "../pages/film/film";
-import Review from "../ui/review/review";
+// import Review from "../ui/review/review";
 import ReviewForm from "../ui/review-form/review-form";
 import Player from "../pages/player/player";
 import filmProp from "../ui/card/card.prop";
@@ -16,7 +16,7 @@ import reviewProp from "../ui/review/review.prop";
 import { getFilm, getReviews } from "../../utils/utils";
 
 function App(props) {
-    const { films, reviews, name, genre, year } = props;
+    const { films, name, genre, year } = props;
     const [user, setUser] = useState(localStorage.getItem("user")) || null;
 
     let token = localStorage.getItem("token") || null;
@@ -138,7 +138,7 @@ function App(props) {
 
 App.propTypes = {
     films: PropTypes.arrayOf(filmProp).isRequired,
-    reviews: PropTypes.arrayOf(reviewProp).isRequired,
+    // reviews: PropTypes.arrayOf(reviewProp).isRequired,
     name: PropTypes.string.isRequired,
     genre: PropTypes.string.isRequired,
     year: PropTypes.number.isRequired,

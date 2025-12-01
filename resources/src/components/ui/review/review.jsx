@@ -3,7 +3,8 @@ import reviewProp from './review.prop';
 import { transformRating, humanizeDate } from '../../../utils/utils';
 
 function Review(props) {
-  const {userName, rating, comment, date} = props.review;
+  const {rating, comment, date} = props.review;
+  const userName = props.review.user.name;
 
   return (
     <div className="review">
@@ -20,13 +21,14 @@ function Review(props) {
           </time>
         </footer>
       </blockquote>
-      <div className="review__rating">{transformRating(rating)}</div>
+      {/* <div className="review__rating">{transformRating(rating)}</div> */}
+      <div className="review__rating">{rating}/10</div>
     </div>
   );
 }
 
-Review.propTypes = {
-  review: reviewProp,
-};
+// Review.propTypes = {
+//   review: reviewProp,
+// };
 
 export default Review;
