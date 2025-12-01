@@ -66,7 +66,7 @@ function Film(props) {
             ignore = true; // Устанавливаем флаг в true при размонтировании компонента или перед следующим запуском эффекта
         };
         
-    }, []);
+    }, [film.id]);
 
     
     return (
@@ -358,7 +358,7 @@ function Film(props) {
 Film.propTypes = {
     film: filmProp,
     films: PropTypes.arrayOf(filmProp).isRequired,
-    reviews: PropTypes.arrayOf(reviewProp).isRequired,
+    // reviews: PropTypes.arrayOf(reviewProp).isRequired,
 };
 
 export default Film;
