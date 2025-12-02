@@ -10,6 +10,7 @@ import MyList from "../pages/mylist/mylist";
 import Film from "../pages/film/film";
 // import Review from "../ui/review/review";
 import ReviewForm from "../ui/review-form/review-form";
+import EditReviewForm from "../ui/edit-review-form/edit-review-form";
 import Player from "../pages/player/player";
 import filmProp from "../ui/card/card.prop";
 import reviewProp from "../ui/review/review.prop";
@@ -24,7 +25,7 @@ function App(props) {
 
     const [avatar, setAvatar] =
         useState(localStorage.getItem("avatar")) || null;
-    console.log(avatar);
+        
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const handleLogout = async (e) => {
@@ -112,6 +113,19 @@ function App(props) {
                         )
                     }
                 />
+                <Route
+                    exact
+                    path={`${AppRoute.FILM}/:filmId/review/:id`}
+                    // render={(data) =>
+                        // user ? (
+                            // <EditReviewForm />
+                        // ) : (
+                        //     <Redirect to="/login" />
+                        // )
+                    // {/* } */}
+                >
+                    <EditReviewForm />
+                </Route>
                 <Route
                     exact
                     path={`${AppRoute.PLAYER}/:id`}

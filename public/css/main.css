@@ -1362,6 +1362,10 @@ main {
     padding: 5px;
 }
 
+.review_buttons button {
+    margin: 10px 0 0 20px;
+}
+
 .sign-in {
     max-width: 480px;
     margin: 0 auto;
