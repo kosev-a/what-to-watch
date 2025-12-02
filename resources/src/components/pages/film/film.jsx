@@ -50,7 +50,7 @@ function Film(props) {
                     setComments(result.comments); // Устанавливаем состояние только если компонент не был размонтирован
                     
                 }
-                console.log(result);
+                // console.log(result);
                 setMessage("Форма успешно отправлена!");
                 setError(null);
             } catch (err) {
