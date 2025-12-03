@@ -71,6 +71,8 @@ class CommentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Comment::destroy($id);
+        
+        return response()->noContent();
     }
 }

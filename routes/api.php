@@ -39,6 +39,7 @@ Route::get('/comments/{id}', [CommentController::class, 'show'])
     ->middleware('auth:sanctum');
 Route::patch('/comments/{id}', [CommentController::class, 'update'])
     ->middleware('auth:sanctum');
+Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 
 Route::get('/promo', [PromoController::class,'show']);
 Route::post('/promo/{id}', [PromoController::class, 'set']);

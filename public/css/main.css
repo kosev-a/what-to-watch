@@ -1362,7 +1362,8 @@ main {
     padding: 5px;
 }
 
-.review_buttons button {
+.review_buttons {
+    display: flex;
     margin: 10px 0 0 20px;
 }
 
