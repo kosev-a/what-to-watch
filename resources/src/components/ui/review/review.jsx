@@ -5,9 +5,14 @@ import { Link } from "react-router-dom";
 import { AppRoute } from "../../../const";
 
 function Review(props) {
+    // const apiUrl = import.meta.env.VITE_APP_URL;
     const { id, filmId, rating, comment, updated_at, created_at } = props.review;
     const userName = props.review.user.name;
+    const onDelete = props.onDelete;
     const date = updated_at || created_at;
+
+    
+
     return (
         <div className="review">
             <blockquote className="review__quote">
@@ -29,7 +34,7 @@ function Review(props) {
                     >
                         Edit review
                     </Link>
-                    <button>Delete review</button>
+                    <button className="btn film-card__button" onClick={() => onDelete(id)}>Delete review</button>
                 </div>
             </blockquote>
             {/* <div className="review__rating">{transformRating(rating)}</div> */}

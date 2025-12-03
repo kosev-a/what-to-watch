@@ -48,7 +48,6 @@ function Film(props) {
                 const result = response.data.data;
                 if (!ignore) {
                     setComments(result.comments); // Устанавливаем состояние только если компонент не был размонтирован
-                    
                 }
                 // console.log(result);
                 setMessage("Форма успешно отправлена!");
@@ -65,10 +64,25 @@ function Film(props) {
         return () => {
             ignore = true; // Устанавливаем флаг в true при размонтировании компонента или перед следующим запуском эффекта
         };
-        
     }, [film.id]);
 
-    
+    const handleDelete = async (commentId) => {
+        try {
+            const response = await fetch(`${apiUrl}/api/comments/${commentId}`, {
+                method: "DELETE",
+            });
+
+            if (response.ok) {
+                console.log("Комментарий удален");
+                setComments(comments.filter(comment => comment.id !== commentId));
+            } else {
+                console.error("Ошибка при удалении комментария");
+            }
+        } catch (error) {
+            console.error("Ошибка сети:", error);
+        }
+    };
+
     return (
         <React.Fragment>
             <div className="visually-hidden">
@@ -311,7 +325,7 @@ function Film(props) {
                             />
                         </div>
 
-                        <FilmTabs film={film} reviews={comments} />
+                        <FilmTabs film={film} reviews={comments} onDelete={handleDelete} />
                     </div>
                 </div>
             </section>
