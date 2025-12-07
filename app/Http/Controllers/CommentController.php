@@ -8,6 +8,7 @@ use App\Http\Requests\CommentRequest;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Barryvdh\Debugbar\Facade as Debugbar;
 
 class CommentController extends Controller
@@ -46,24 +47,30 @@ class CommentController extends Controller
         $comment = Comment::findOrFail($id);
         // Debugbar::info($comment);
 
+        if ( !Gate::allows("update", $comment)) {
+            return response()->json(["message" => "Невозможно обновить комментарий"], 403);
+        }
+
         return response()->json(["comment" => $comment->text, "rating" => $comment->rating],200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id): JsonResponse
     {
         $comment = Comment::findOrFail($id);
+
+        if ($request->user()->cannot("update", $comment)) {
+            return response()->json(["message" => "Невозможно обновить комментарий"], 403);
+        }
 
         $comment->update([
             "text" => $request->input("comment"),
             "rating" => $request->input("rating"),
         ]);
-        Debugbar::message($comment);
-        return $this->success([
-            "comment" => $comment->id,
-        ], 200);
+        // Debugbar::message($comment);
+        return response()->json(["comment" => $comment->id,], 200);
     }
 
     /**
@@ -71,7 +78,13 @@ class CommentController extends Controller
      */
     public function destroy(string $id)
     {
-        Comment::destroy($id);
+        $comment = Comment::findOrFail($id);
+
+         if ( !Gate::allows("delete", $comment)) {
+            return response()->json(["message" => "Невозможно удалить комментарий"], 403);
+        }
+
+        $comment->delete();
         
         return response()->noContent();
     }

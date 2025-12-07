@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { MAX_RATING } from "../../../const";
+import { MAX_RATING, FilmTabsNames } from "../../../const";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 
-function ReviewForm({ film }) {
+function ReviewForm({ film, setActiveTab }) {
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const [comment, setComment] = useState("");
@@ -43,6 +43,7 @@ function ReviewForm({ film }) {
             setError(null);
             // Опционально: очистить форму
             // setFormData({ email: "", password: "" });
+            setActiveTab(FilmTabsNames.REVIEWS);
             navigate.goBack();
         } catch (err) {
             console.error("Ошибка при отправке комментария:", err);

@@ -7,12 +7,19 @@ import FilmTabs from "../../ui/film-tabs/film-tabs";
 import PropTypes from "prop-types";
 // import {} from 'react-router-dom';
 import { Link, useHistory } from "react-router-dom";
-import { AppRoute, MAX_SIMILAR_FILMS_COUNT } from "../../../const";
+import {
+    AppRoute,
+    MAX_SIMILAR_FILMS_COUNT,
+    FilmTabsNames,
+} from "../../../const";
 import { getSimilarFilms } from "../../../utils/utils";
 
 function Film(props) {
-    // const { film, films, reviews, user, avatar, onLogout } = props;
-    const { film, films, user, avatar, onLogout } = props;
+    // let token = localStorage.getItem("token") || null;
+    // axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    const { film, films, user, avatar, onLogout, activeTab, setActiveTab } =
+        props;
     const {
         name,
         posterImage,
@@ -50,13 +57,18 @@ function Film(props) {
                     setComments(result.comments); // Устанавливаем состояние только если компонент не был размонтирован
                 }
                 // console.log(result);
-                setMessage("Форма успешно отправлена!");
+                setMessage("");
                 setError(null);
             } catch (err) {
                 if (!ignore) {
-                    console.error("Ошибка при отправке формы:", err);
-                    setError("Произошла ошибка при отправке формы.");
-                    setMessage("");
+                    console.error(
+                        "Ошибка при получении списка комментариев:",
+                        err
+                    );
+                    setError(
+                        "Произошла ошибка при получении списка комментариев."
+                    );
+                    setMessage("Ошибка при загрузке комментариев");
                 }
             }
         })();
@@ -66,15 +78,19 @@ function Film(props) {
         };
     }, [film.id]);
 
-    const handleDelete = async (commentId) => {
+    const handleCommentDelete = async (commentId) => {
         try {
-            const response = await fetch(`${apiUrl}/api/comments/${commentId}`, {
-                method: "DELETE",
-            });
+            const response = await axios.delete(
+                `${apiUrl}/api/comments/${commentId}`
+            );
 
-            if (response.ok) {
+            console.log(response);
+
+            if (response.status === 204) {
                 console.log("Комментарий удален");
-                setComments(comments.filter(comment => comment.id !== commentId));
+                setComments(
+                    comments.filter((comment) => comment.id !== commentId)
+                );
             } else {
                 console.error("Ошибка при удалении комментария");
             }
@@ -325,7 +341,13 @@ function Film(props) {
                             />
                         </div>
 
-                        <FilmTabs film={film} reviews={comments} onDelete={handleDelete} />
+                        <FilmTabs
+                            film={film}
+                            reviews={comments}
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
+                            onDelete={handleCommentDelete}
+                        />
                     </div>
                 </div>
             </section>

@@ -11,8 +11,6 @@ function Review(props) {
     const onDelete = props.onDelete;
     const date = updated_at || created_at;
 
-    
-
     return (
         <div className="review">
             <blockquote className="review__quote">

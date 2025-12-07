@@ -33,13 +33,13 @@ Route::apiResource('favorites', FavoriteController::class);
 
 Route::get('/films/{id}/similar', [SimilarFilmController::class, 'index']);
 
-Route::post('/films/{id}/comments', [CommentController::class, 'store'])
-    ->middleware('auth:sanctum');
-Route::get('/comments/{id}', [CommentController::class, 'show'])
-    ->middleware('auth:sanctum');
-Route::patch('/comments/{id}', [CommentController::class, 'update'])
-    ->middleware('auth:sanctum');
-Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+Route::middleware('auth:sanctum')
+    ->controller(CommentController::class)->group(function () {
+        Route::post('/films/{id}/comments', 'store');
+        Route::get('/comments/{id}', 'show');
+        Route::patch('/comments/{id}', 'update');
+        Route::delete('/comments/{id}', 'destroy');
+});
 
-Route::get('/promo', [PromoController::class,'show']);
+Route::get('/promo', [PromoController::class, 'show']);
 Route::post('/promo/{id}', [PromoController::class, 'set']);
