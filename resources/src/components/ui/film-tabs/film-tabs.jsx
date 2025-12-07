@@ -8,7 +8,7 @@ import FilmTabOverview from '../film-tab-overview/film-tab-overview';
 import FilmTabDetails from '../film-tab-details/film-tab-details';
 import FilmTabReviews from '../film-tab-reviews/film-tab-reviews';
 
-const renderFilmTabs = (film, reviews, activeTab, onDelete) => {
+const renderFilmTabs = (film, reviews, activeTab, onDelete, user) => {
   switch(activeTab) {
     case FilmTabsNames.DETAILS:
       return (
@@ -22,6 +22,7 @@ const renderFilmTabs = (film, reviews, activeTab, onDelete) => {
         <FilmTabReviews
           reviews={reviews}
           onDelete={onDelete}
+          user={user}
         />
       );
 
@@ -36,7 +37,7 @@ const renderFilmTabs = (film, reviews, activeTab, onDelete) => {
 
 function FilmTabs(props) {
   // const [activeTab, setAtiveTab] = useState(FilmTabsNames.OVERVIEW);
-  const {film, reviews, activeTab, setActiveTab, onDelete}  = props;
+  const {film, reviews, activeTab, setActiveTab, onDelete, user}  = props;
 
   return (
     <div className="film-card__desc">
@@ -50,7 +51,7 @@ function FilmTabs(props) {
         />
       </nav>
 
-      {renderFilmTabs(film, reviews, activeTab, onDelete)}
+      {renderFilmTabs(film, reviews, activeTab, onDelete, user)}
 
     </div>
   );

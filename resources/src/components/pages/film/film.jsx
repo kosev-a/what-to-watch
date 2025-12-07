@@ -347,6 +347,7 @@ function Film(props) {
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}
                             onDelete={handleCommentDelete}
+                            user={user}
                         />
                     </div>
                 </div>

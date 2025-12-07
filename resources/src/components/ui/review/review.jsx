@@ -6,8 +6,12 @@ import { AppRoute } from "../../../const";
 
 function Review(props) {
     // const apiUrl = import.meta.env.VITE_APP_URL;
-    const { id, filmId, rating, comment, updated_at, created_at } = props.review;
+    const { id, filmId, rating, comment, updated_at, created_at } =
+        props.review;
+    const user = props.user;
+    const isAdmin = localStorage.getItem("admin");
     const userName = props.review.user.name;
+    const userId = props.review.user.id;
     const onDelete = props.onDelete;
     const date = updated_at || created_at;
 
@@ -25,24 +29,28 @@ function Review(props) {
                         {humanizeDate(date, "MMMM DD, YYYY")}
                     </time>
                 </footer>
-                <div className="review_buttons">
-                    <Link
-                        className="btn film-card__button"
-                        to={`${AppRoute.FILM}/${filmId}/review/${id}`}
-                    >
-                        Edit review
-                    </Link>
-                    <button className="btn film-card__button" onClick={() => onDelete(id)}>Delete review</button>
-                </div>
+                {(user && userId === +user) || (user && isAdmin === "true") ? (
+                    <div className="review_buttons">
+                        <Link
+                            className="btn film-card__button"
+                            to={`${AppRoute.FILM}/${filmId}/review/${id}`}
+                        >
+                            Edit review
+                        </Link>
+                        <button
+                            className="btn film-card__button"
+                            onClick={() => onDelete(id)}
+                        >
+                            Delete review
+                        </button>
+                    </div>
+                ) : (
+                    ""
+                )}
             </blockquote>
-            {/* <div className="review__rating">{transformRating(rating)}</div> */}
             <div className="review__rating">{rating}/10</div>
         </div>
     );
 }
-
-// Review.propTypes = {
-//   review: reviewProp,
-// };
 
 export default Review;

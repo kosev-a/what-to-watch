@@ -25,7 +25,7 @@ function App(props) {
 
     const [avatar, setAvatar] =
         useState(localStorage.getItem("avatar")) || null;
-        
+
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const [activeTab, setActiveTab] = useState(FilmTabsNames.OVERVIEW);
@@ -75,7 +75,9 @@ function App(props) {
                 <Route path="/login" exact>
                     <SignIn />
                 </Route>
-                <Route path="/signup" exact component={SignUp} />
+                <Route path="/signup" exact>
+                    <SignUp />
+                </Route>
                 <Route path="/mylist" exact>
                     <MyList films={films} />
                 </Route>
@@ -86,7 +88,6 @@ function App(props) {
                         <Film
                             film={getFilm(films, data.match.params.id)}
                             films={films}
-                            // reviews={reviews}
                             user={user}
                             avatar={avatar}
                             onLogout={handleLogout}
@@ -123,9 +124,7 @@ function App(props) {
                     path={`${AppRoute.FILM}/:filmId/review/:id`}
                     render={() =>
                         user ? (
-                            <EditReviewForm 
-                                setActiveTab={setActiveTab}
-                            />
+                            <EditReviewForm setActiveTab={setActiveTab} />
                         ) : (
                             <Redirect to="/login" />
                         )
