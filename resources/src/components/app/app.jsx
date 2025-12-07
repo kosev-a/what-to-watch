@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { BrowserRouter, Route, Switch, Link, Redirect } from "react-router-dom";
 import axios from "axios";
-import { AppRoute } from "../../const";
+import { AppRoute, FilmTabsNames } from "../../const";
 import PropTypes from "prop-types";
 import Main from "../pages/main/main";
 import SignIn from "../pages/signin/signin";
@@ -27,6 +27,8 @@ function App(props) {
         useState(localStorage.getItem("avatar")) || null;
         
     const apiUrl = import.meta.env.VITE_APP_URL;
+
+    const [activeTab, setActiveTab] = useState(FilmTabsNames.OVERVIEW);
 
     const handleLogout = async (e) => {
         e.preventDefault(); // Предотвращаем стандартное поведение формы, хотя формы здесь нет, это хорошая практика для обработчиков
@@ -88,6 +90,8 @@ function App(props) {
                             user={user}
                             avatar={avatar}
                             onLogout={handleLogout}
+                            activeTab={activeTab}
+                            setActiveTab={setActiveTab}
                         />
                     )}
                 />
@@ -107,6 +111,7 @@ function App(props) {
                         user ? (
                             <ReviewForm
                                 film={getFilm(films, data.match.params.id)}
+                                setActiveTab={setActiveTab}
                             />
                         ) : (
                             <Redirect to="/login" />
@@ -116,16 +121,16 @@ function App(props) {
                 <Route
                     exact
                     path={`${AppRoute.FILM}/:filmId/review/:id`}
-                    // render={(data) =>
-                        // user ? (
-                            // <EditReviewForm />
-                        // ) : (
-                        //     <Redirect to="/login" />
-                        // )
-                    // {/* } */}
-                >
-                    <EditReviewForm />
-                </Route>
+                    render={() =>
+                        user ? (
+                            <EditReviewForm 
+                                setActiveTab={setActiveTab}
+                            />
+                        ) : (
+                            <Redirect to="/login" />
+                        )
+                    }
+                />
                 <Route
                     exact
                     path={`${AppRoute.PLAYER}/:id`}

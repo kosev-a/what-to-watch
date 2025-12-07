@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { MAX_RATING } from "../../../const";
+import { MAX_RATING, FilmTabsNames } from "../../../const";
 import { useHistory, useParams } from "react-router-dom";
 import axios from "axios";
 
-function EditReviewForm() {
+function EditReviewForm({ setActiveTab }) {
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const [comment, setComment] = useState("");
@@ -74,6 +74,7 @@ function EditReviewForm() {
 
             setMessage("Комментарий успешно добавлен!");
             setError(null);
+            setActiveTab(FilmTabsNames.REVIEWS);
             navigate.goBack();
         } catch (err) {
             console.error("Ошибка при отправке комментария:", err);

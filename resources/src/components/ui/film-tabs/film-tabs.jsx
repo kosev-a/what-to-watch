@@ -35,8 +35,8 @@ const renderFilmTabs = (film, reviews, activeTab, onDelete) => {
 };
 
 function FilmTabs(props) {
-  const [activeTab, setAtiveTab] = useState(FilmTabsNames.OVERVIEW);
-  const {film, reviews, onDelete}  = props;
+  // const [activeTab, setAtiveTab] = useState(FilmTabsNames.OVERVIEW);
+  const {film, reviews, activeTab, setActiveTab, onDelete}  = props;
 
   return (
     <div className="film-card__desc">
@@ -45,7 +45,7 @@ function FilmTabs(props) {
         <FilmTabsList
           activeTab={activeTab}
           tabClickHandler={(tab) => {
-            setAtiveTab(tab);
+            setActiveTab(tab);
           }}
         />
       </nav>
