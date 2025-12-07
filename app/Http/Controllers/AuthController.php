@@ -61,11 +61,11 @@ class AuthController extends Controller
         }
 
         $token = Auth::user()->createToken('auth-token');
-        $name = Auth::user()->name;
+        $userId = Auth::user()->id;
         $avatar = Auth::user()->avatar_path;
-        // $isAdmin = Auth::user()->is_admin;
+        $isAdmin = Auth::user()->is_admin;
 
-        $user = ['token' => $token->plainTextToken, 'name' => $name, 'avatar' => $avatar];
+        $user = ['token' => $token->plainTextToken, 'userId' => $userId, 'admin' => $isAdmin, 'avatar' => $avatar];
 
         return $this->success($user);
 

@@ -33,11 +33,14 @@ function SignIn() {
             const token = data.token;
             localStorage.setItem("token", token);
 
-            const user = data.name;
+            const user = data.userId;
             localStorage.setItem("user", user);
 
             const avatar = data.avatar;
             localStorage.setItem("avatar", avatar);
+
+            const admin = data.admin;
+            localStorage.setItem("admin", admin);
 
             setMessage("Форма успешно отправлена!");
             setError(null);

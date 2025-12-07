@@ -8,7 +8,7 @@ function FilmTabReviews(props) {
         <div className="film-card__reviews">
             <div className="film-card__reviews-col">
                 {reviews.slice(0, reviews.length).map((review) => (
-                    <Review key={review.id} review={review} onDelete={props.onDelete} />
+                    <Review key={review.id} review={review} onDelete={props.onDelete} user={props.user} />
                 ))}
             </div>
         </div>
