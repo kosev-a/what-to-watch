@@ -6,6 +6,7 @@ import PropTypes from "prop-types";
 import Main from "../pages/main/main";
 import SignIn from "../pages/signin/signin";
 import SignUp from "../pages/signup/signup";
+import Profile from "../pages/profile/profile";
 import MyList from "../pages/mylist/mylist";
 import Film from "../pages/film/film";
 // import Review from "../ui/review/review";
@@ -77,6 +78,9 @@ function App(props) {
                 </Route>
                 <Route path="/signup" exact>
                     <SignUp />
+                </Route>
+                <Route path="/profile" exact>
+                    <Profile />
                 </Route>
                 <Route path="/mylist" exact>
                     <MyList films={films} />

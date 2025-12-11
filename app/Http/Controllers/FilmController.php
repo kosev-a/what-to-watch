@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddFilmRequest;
 use App\Http\Resources\FilmResource;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Models\Film;
-use Illuminate\Contracts\Support\Responsable;
 use Barryvdh\Debugbar\Facade as Debugbar;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\Request;
 
 class FilmController extends Controller
 {
@@ -16,15 +16,23 @@ class FilmController extends Controller
      */
     public function index()
     {
-        return "Hello";
+        // return "Hello";
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AddFilmRequest $request): Responsable
     {
-        //
+        $validated = $request->validated();
+        
+        // Debugbar::info($validated['imdbId']);
+        $film = Film::create(['imdb_id' => $validated['imdbId']]);
+        $filmId = $film->id;
+
+        return $this->success( [
+            'message' => 'success'
+        ],201);
     }
 
     /**
@@ -33,7 +41,7 @@ class FilmController extends Controller
     public function show(string $id)
     {
         // Загружаем фильм -> комментарии -> пользователей комментариев
-        $film = Film::with("comments.user")->findOrFail($id);
+        $film = Film::with('comments.user')->findOrFail($id);
         // Debugbar::info($film);
 
         return new FilmResource($film);

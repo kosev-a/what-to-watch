@@ -20,11 +20,11 @@ class FilmFactory extends Factory
     public function definition(): array
     {
         return [
-            "imdbid" => $this->faker->uuid,
-            "name" => $this->faker->word,
+            "imdb_id" => $this->faker->uuid,
+            "title" => $this->faker->word,
             "director" => $this->faker->name,
             "run_time" => $this->faker->numberBetween(70, 250),
-            "isPromo" => $this->faker->numberBetween(0, 1),
+            "is_promo" => $this->faker->numberBetween(0, 1),
             "status" => "ready",
         ];
     }
