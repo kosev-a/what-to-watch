@@ -19,9 +19,9 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            "user_id" => $this->faker->numberBetween(1,11),
+            "user_id" => $this->faker->numberBetween(1,10),
             "film_id" => $this->faker->numberBetween(1,10),
-            "text" => $this->faker->sentence,
+            "text" => $this->faker->sentence(22),
             "rating" => $this->faker->numberBetween(1,10),
         ];
     }

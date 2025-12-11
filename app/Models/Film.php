@@ -12,8 +12,8 @@ class Film extends Model
 {
     use HasFactory;
     protected $fillable = [
-        "imdbid",
-        "name",
+        "imdb_id",
+        "title",
         "poster_image",
         "preview_image",
         "background_image",
@@ -23,7 +23,7 @@ class Film extends Model
         "released",
         "video_link",
         "preview_video_link",
-        "isPromo",
+        "is_promo",
         "status"
     ];
 

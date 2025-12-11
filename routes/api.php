@@ -24,8 +24,9 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::get('/user', [UserController::class, 'show']);
 Route::patch('/user', [UserController::class, 'update']);
 
-Route::apiResource('films', FilmController::class);
+// Route::apiResource('films', FilmController::class);
 Route::get('/films/{id}/comments', [FilmController::class, 'show']);
+Route::post('/films', [FilmController::class, 'store']);
 
 Route::apiResource('genres', GenreController::class);
 
