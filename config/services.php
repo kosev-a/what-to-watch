@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'omdb' => [
+        'films' => [
+            'url' => env('EXT_API_FILMS', 'http://www.omdbapi.com/?apikey=66c75d3')
+        ],
+        // 'comments' => [
+        //     'url' => env('EXT_API_COMMENTS', 'http://academy.localhost/api/comments/')
+        // ],
+    ],
 ];
