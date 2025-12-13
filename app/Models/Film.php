@@ -11,6 +11,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Film extends Model
 {
     use HasFactory;
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_ON_MODERATION = 'moderate';
+    public const STATUS_READY = 'ready';
+    
     protected $fillable = [
         "imdb_id",
         "title",
@@ -26,11 +31,6 @@ class Film extends Model
         "is_promo",
         "status"
     ];
-
-    public function actor(): HasMany
-    {
-        return $this->hasMany(Actor::class);
-    }
 
     // public function comments(): HasMany
     // {
@@ -52,10 +52,14 @@ class Film extends Model
     }
 
     // отношение жанры
-    public function genres(): HasMany
+    public function genres(): BelongsToMany
     {
-        return $this->hasMany(Genre::class)
-            ->withPivot('name');
+        return $this->belongsToMany(Genre::class);
+    }
+
+    public function actors(): BelongsToMany
+    {
+        return $this->belongsToMany(Actor::class);
     }
 
     // отношение избранное

@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddFilmRequest;
 use App\Http\Resources\FilmResource;
+use App\Models\Actor;
 use App\Models\Film;
+use App\Models\Genre;
+use App\Support\Import\FilmsRepository;
+use App\Support\Import\OmdbFilmsRepository;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FilmController extends Controller
 {
@@ -25,14 +30,11 @@ class FilmController extends Controller
     public function store(AddFilmRequest $request): Responsable
     {
         $validated = $request->validated();
-        
-        // Debugbar::info($validated['imdbId']);
-        $film = Film::create(['imdb_id' => $validated['imdbId']]);
-        $filmId = $film->id;
 
-        return $this->success( [
-            'message' => 'success'
-        ],201);
+        // Debugbar::info($validated['imdbId']);
+        Film::create(['imdb_id' => $validated['imdbId']]);
+
+        return $this->success(null, 201);
     }
 
     /**

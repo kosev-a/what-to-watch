@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services\Film;
+namespace App\Services;
+use App\Support\Import\FilmsRepository;
 
 class FilmService
 {
-    public function __construct(private ImportRepository $repository)
+    public function __construct(private FilmsRepository $repository)
     {
     }
 

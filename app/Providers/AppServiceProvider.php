@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
+use App\Support\Import\FilmsRepository;
+use App\Support\Import\OmdbFilmsRepository;
 use Barryvdh\Debugbar\Facade as Debugbar;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(FilmsRepository::class, OmdbFilmsRepository::class);
     }
 
     /**
@@ -24,14 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Gate::define('delete-comment', function (User $user, Comment $comment) {
-            // if ($user->is_admin) {
-            //     return true;
-            // }
-            // Debugbar::info($user->id);
-            // return $user->id === $comment->user_id;
-            // return true;
-        // });
-
+        //
     }
 }
