@@ -4,6 +4,7 @@ export const AppRoute = {
   MY_LIST: '/mylist',
   FILM: '/film',
   PLAYER: '/player',
+  PROFILE: '/profile',
 };
 
 export const MAX_ACTORS_COUNT = 4;

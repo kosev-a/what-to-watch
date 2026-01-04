@@ -1,8 +1,9 @@
 import React, { useState, useContext } from "react";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import FilmList from "../../ui/film-list/film-list";
 import filmProp from "../../ui/card/card.prop";
 import PropTypes from "prop-types";
-//import {useHistory} from 'react-router-dom';
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../../const";
 export default Main;
@@ -10,14 +11,32 @@ export default Main;
 function Main(props) {
     const films = props.films;
     // console.log(props);
-    const { name, genre, year, user, avatar, onLogout } = props;
+    const { name, genre, year, user, onLogout } = props;
 
     const apiUrl = import.meta.env.VITE_APP_URL;
     const loginLink = apiUrl + "/login";
     const signUpLink = apiUrl + "/signup";
 
-    const avatarSrc =
-        avatar != "null" ? `${apiUrl}/storage/${avatar}` : "img/avatar.jpg";
+    const [avatarSrc, setAvatarSrc] = useState("");
+
+    // Получение данных о пользователе
+    if (user) {
+        const { data, isLoading, error } = useQuery({
+            queryKey: ["user"], // Уникальный ключ
+            queryFn: async () => {
+                const response = await axios.get(`${apiUrl}/api/user/${user}`);
+                const result = response.data.data;
+                console.log(result);
+                if (result.avatar_path) {
+                    setAvatarSrc(`${apiUrl}/storage/${result.avatar_path}`);
+                } else {
+                    setAvatarSrc("img/avatar.jpg");
+                }
+                return result;
+            },
+            staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
+        });
+    }
 
     return (
         <React.Fragment>
@@ -142,10 +161,12 @@ function Main(props) {
                             <>
                                 <li className="user-block__item">
                                     <div className="user-block__avatar">
-                                        <Link to={AppRoute.MY_LIST}>
+                                        <Link
+                                            to={`${AppRoute.PROFILE}/${user}`}
+                                        >
                                             <img
                                                 src={avatarSrc}
-                                                alt="User avatar"
+                                                alt=""
                                                 width="63"
                                                 height="63"
                                             />

@@ -7,6 +7,7 @@ import Main from "../pages/main/main";
 import SignIn from "../pages/signin/signin";
 import SignUp from "../pages/signup/signup";
 import Profile from "../pages/profile/profile";
+import EditProfile from "../pages/edit-profile/editProfile";
 import MyList from "../pages/mylist/mylist";
 import Film from "../pages/film/film";
 // import Review from "../ui/review/review";
@@ -18,7 +19,7 @@ import reviewProp from "../ui/review/review.prop";
 import { getFilm, getReviews } from "../../utils/utils";
 
 function App(props) {
-    const { films, name, genre, year } = props;
+    const { films, name, genre, year, apiUrl } = props;
     const [user, setUser] = useState(localStorage.getItem("user")) || null;
 
     let token = localStorage.getItem("token") || null;
@@ -27,9 +28,13 @@ function App(props) {
     const [avatar, setAvatar] =
         useState(localStorage.getItem("avatar")) || null;
 
-    const apiUrl = import.meta.env.VITE_APP_URL;
+    const avatarSrc =
+        avatar != "null" ? `${apiUrl}/storage/${avatar}` : "img/avatar.jpg";
 
     const [activeTab, setActiveTab] = useState(FilmTabsNames.OVERVIEW);
+
+    const [userData, setUserData] = useState(null);
+    const [userDataError, setUserDataError] = useState("");
 
     const handleLogout = async (e) => {
         e.preventDefault(); // Предотвращаем стандартное поведение формы, хотя формы здесь нет, это хорошая практика для обработчиков
@@ -44,12 +49,13 @@ function App(props) {
                 // Сервер подтвердил выход, теперь очищаем локальные данные
                 setUser(null);
                 setAvatar(null);
+                setUserData(null);
                 localStorage.removeItem("user");
                 localStorage.removeItem("token");
                 localStorage.removeItem("avatar");
                 token = null;
                 // Перенаправляем пользователя
-                // window.location.href = '/login';
+                window.location.href = "/";
             } else {
                 // Обрабатываем ошибки сервера
                 console.error("Ошибка при выходе из системы на сервере");
@@ -58,6 +64,40 @@ function App(props) {
             console.error("Ошибка сети:", error);
         }
     };
+
+    //получение информации о пользователе
+    useEffect(() => {
+        // let ignore = false; // Флаг для отслеживания, следует ли игнорировать результат
+        if (user) {
+            (async () => {
+                try {
+                    const response = await axios.get(
+                        `${apiUrl}/api/user/${user}`
+                    );
+                    const result = response.data.data;
+                    console.log(result);
+                    // if (!ignore) {
+                    setUserData(result); // Устанавливаем состояние только если компонент не был размонтирован
+                    // }
+                } catch (err) {
+                    // if (!ignore) {
+                    console.error(
+                        "Произошла ошибка при получении данных профиля:",
+                        err
+                    );
+                    setUserDataError(
+                        "Произошла ошибка при получении данных профиля."
+                    );
+                    // }
+                }
+            })();
+        }
+
+        // // Функция очистки
+        // return () => {
+        //     ignore = true; // Устанавливаем флаг в true при размонтировании компонента или перед следующим запуском эффекта
+        // };
+    }, [user]);
 
     return (
         <BrowserRouter>
@@ -69,7 +109,6 @@ function App(props) {
                         genre={genre}
                         year={year}
                         user={user}
-                        avatar={avatar}
                         onLogout={handleLogout}
                     />
                 </Route>
@@ -79,12 +118,27 @@ function App(props) {
                 <Route path="/signup" exact>
                     <SignUp />
                 </Route>
-                <Route path="/profile" exact>
-                    <Profile />
+                <Route path={`${AppRoute.PROFILE}/:id`} exact>
+                    <Profile
+                        user={user}
+                        films={films}
+                        onLogout={handleLogout}
+                    />
                 </Route>
-                <Route path="/mylist" exact>
+                <Route path={`${AppRoute.PROFILE}/edit/:id`} exact>
+                    <EditProfile
+                        avatarSrc={avatarSrc}
+                        userId={user}
+                        films={films}
+                        userData={userData}
+                        setUserData={setUserData}
+                        setAvatar={setAvatar}
+                        onLogout={handleLogout}
+                    />
+                </Route>
+                {/* <Route path="/mylist" exact>
                     <MyList films={films} />
-                </Route>
+                </Route> */}
                 <Route
                     exact
                     path={`${AppRoute.FILM}/:id`}
@@ -93,7 +147,7 @@ function App(props) {
                             film={getFilm(films, data.match.params.id)}
                             films={films}
                             user={user}
-                            avatar={avatar}
+                            avatarSrc={avatarSrc}
                             onLogout={handleLogout}
                             activeTab={activeTab}
                             setActiveTab={setActiveTab}

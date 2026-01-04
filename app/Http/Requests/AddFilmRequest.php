@@ -22,7 +22,7 @@ class AddFilmRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'imdbId' => ['required','string', 'regex:/^tt\d+$/'],
+            'imdbId' => ['required','string', 'unique:films,imdb_id', 'regex:/^tt\d+$/'],
         ];
     }
 }

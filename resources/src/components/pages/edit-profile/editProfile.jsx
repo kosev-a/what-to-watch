@@ -1,74 +1,105 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import MyList from "../mylist/mylist";
-import { AppRoute, FilmTabsNames } from "../../../const";
 
-export default Profile;
+export default EditProfile;
 
-function Profile(props) {
+function EditProfile(props) {
     const apiUrl = import.meta.env.VITE_APP_URL;
 
-    const { user, films, onLogout } = props;
+    const { userData, userId } = props;
 
-    const [imdbId, setImdbId] = useState("");
+    const navigate = useHistory();
 
     const [message, setMessage] = useState("");
+
+    const [error, setError] = useState(null);
     const [errors, setErrors] = useState({}); // Для ошибок по полям
 
-    // Получение данных о пользователе
-    const { data, isLoading, error } = useQuery({
-        queryKey: ["user"], // Уникальный ключ
-        queryFn: async () => {
-            const response = await axios.get(`${apiUrl}/api/user/${user}`);
-            const result = response.data.data;
-            console.log(result);
-            return result;
-        },
-        staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
+    const [data, setData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
     });
+
+    useEffect(() => {
+        setData({
+            ...data,
+            name: userData ? userData.name : "",
+            email: userData ? userData.email : "",
+        });
+    }, [userData]);
+
+    const [file, setFile] = useState(null);
+
+    //обработчик добавления изображения
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
 
     // Обработчик изменения полей формы
     const handleChange = (e) => {
-        setImdbId(e.target.value);
+        setData({ ...data, [e.target.name]: e.target.value });
     };
 
     // Обработчик отправки формы
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await axios.post(`${apiUrl}/api/films`, {
-                imdbId: imdbId,
+    const queryClient = useQueryClient(); // Для инвалидации кэша
+
+    const mutation = useMutation({
+        mutationFn: async () => {
+            // e.preventDefault();
+
+            const formData = new FormData();
+            //добавление данных в formData
+            Object.entries(data).forEach(([key, value]) => {
+                formData.append(key, value);
             });
+            formData.append("image", file);
+            // стандартный механизм подмены метода (Method Spoofing) - важнейший шаг для Laravel:
+            formData.append("_method", "PATCH");
+
+            // Отправляем POST, но добавляем в FormData специальное поле _method со значением 'PATCH'
+            const response = await axios.post(`${apiUrl}/api/user`, formData);
             console.log("Данные успешно отправлены:", response.data);
-            // const data = response.data.data;
-            // console.log(data);
 
-            setMessage("IMDB id фильма успешно добавлен в базу");
-            // setError(null);
+            const result = response.data.data;
 
-            setImdbId("");
-        } catch (err) {
+            return result;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["user"] }); // Инвалидация кэша после успеха
+            setError(null);
+            setMessage("Данные успешно отправлены");
+            setTimeout(() => {
+                navigate.push(`/profile/${userId}`);
+            }, 2000);
+        },
+        onError: (err) => {
             if (err.response) {
-                setMessage("");
                 // Сервер ответил, но статус ошибки (например 422)
                 const { message, errors: validationErrors } = err.response.data;
                 // setError(message || "Произошла ошибка при отправке формы.");
                 if (validationErrors) {
-                    setErrors(validationErrors);
-                    console.log(err.response.data.errors); // Устанавливаем ошибки по полям
+                    setErrors(validationErrors); // Устанавливаем ошибки по полям
+                    setMessage("");
                 }
-            } else if (error.request) {
-                setMessage("");
+            } else if (err.request) {
                 // Запрос был сделан, но ответ не получен (сеть, 500 ошибка)
-                // setError("Ошибка сети или сервера. Попробуйте позже.");
-            } else {
+                setError("Ошибка сети или сервера. Попробуйте позже.");
                 setMessage("");
+            } else {
                 // Что-то пошло не так при настройке запроса
-                // setError("Неизвестная ошибка.");
+                setError("Неизвестная ошибка.");
+                setMessage("");
             }
-        }
+        },
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        mutation.mutate({ name: data.name, email: data.email });
     };
 
     return (
@@ -176,97 +207,95 @@ function Profile(props) {
                             </span>
                         </a>
                     </div>
-                    <h1 className="page-title user-page__title">Profile</h1>
+                    <h1 className="page-title user-page__title">
+                        Edit Profile
+                    </h1>
                 </header>
-                <div className="profile__content">
-                    <div className="user-profile">
-                        <div className="user-profile__avatar">
-                            {isLoading && (
-                                <p className="user-profile__name">Loading...</p>
-                            )}
-                            {data && ( data.avatar_path ?
-                                (<img
-                                    src={`${apiUrl}/storage/${data.avatar_path}`}
-                                    alt=""
-                                    width="150"
-                                    height="150"
-                                />) : (<img
-                                    src="img/avatar.jpg"
-                                    alt=""
-                                    width="150"
-                                    height="150"
-                                />)
-                            )}
-                        </div>
-                        <div className="user-profile__text">
-                            {data && (
-                                <p className="user-profile__name">
-                                    {data.name}
-                                </p>
-                            )}
-                            {isLoading && (
-                                <p className="user-profile__name">Loading...</p>
-                            )}
-
-                            {data && (
-                                <p className="user-profile__email">
-                                    {data.email}
-                                </p>
-                            )}
-                            {isLoading && (
-                                <p className="user-profile__email">
-                                    Loading...
-                                </p>
-                            )}
-
-                            {data && (
-                                <p>{`Роль: ${
-                                    data.is_admin && data.is_admin !== "Loading"
-                                        ? "Администратор"
-                                        : !data.is_admin &&
-                                          data.is_admin !== "Loading"
-                                        ? "Пользователь"
-                                        : "Loading..."
-                                }`}</p>
-                            )}
-                            <div className="user-profile__profile_buttons">
-                                <Link
-                                    to={`${AppRoute.PROFILE}/edit/${user}`}
-                                    className="user-profile__link"
-                                >
-                                    Edit profile
-                                </Link>
-                                <form onSubmit={onLogout}>
-                                    <button
-                                        type="submit"
-                                        className="user-profile__link"
-                                    >
-                                        Sign out
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                <div className="sign-in user-page__content">
                     <form onSubmit={handleSubmit} className="sign-in__form">
                         <div className="sign-in__fields">
                             <div className="sign-in__field">
-                                <p className="add_movie_text">
-                                    Add a movie to the database
-                                </p>
                                 <input
                                     className="sign-in__input"
                                     type="text"
-                                    placeholder="Enter IMDB id"
-                                    name="imdbId"
-                                    id="imdbId"
+                                    placeholder="Name"
+                                    name="name"
+                                    id="name"
                                     onChange={handleChange}
-                                    value={imdbId}
+                                    value={data.name}
                                 />
                                 <label
                                     className="sign-in__label visually-hidden"
-                                    htmlFor="imdbId"
+                                    htmlFor="name"
                                 >
-                                    Add a movie
+                                    Name
+                                </label>
+                            </div>
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="email"
+                                    placeholder="Email address"
+                                    name="email"
+                                    id="email"
+                                    onChange={handleChange}
+                                    value={data.email}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="email"
+                                >
+                                    Email address
+                                </label>
+                            </div>
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="password"
+                                    placeholder="Password"
+                                    name="password"
+                                    id="password"
+                                    onChange={handleChange}
+                                    value={data.password}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="password"
+                                >
+                                    Password
+                                </label>
+                            </div>
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    name="password_confirmation"
+                                    id="password_confirm"
+                                    onChange={handleChange}
+                                    value={data.password_confirmation}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="password_confirm"
+                                >
+                                    Confirm Password
+                                </label>
+                            </div>
+                            <div className="sign-in__field">
+                                <input
+                                    className="sign-in__input"
+                                    type="file"
+                                    name="image"
+                                    id="fileInputId"
+                                    accept="image/png, image/jpeg, image/jpg"
+                                    onChange={handleFileChange}
+                                />
+                                <label
+                                    className="sign-in__label visually-hidden"
+                                    htmlFor="fileInputId"
+                                >
+                                    Upload Image
                                 </label>
                             </div>
                         </div>
@@ -276,12 +305,19 @@ function Profile(props) {
                             </button>
                         </div>
                     </form>
-                    {message}
-                    {error}
+                    <p>{message}</p>
+                    <p>{error}</p>
+                    {/* отображение ошибок валидации */}
+                    {Object.keys(errors).map((fieldName) => (
+                        <div key={fieldName}>
+                            {Object.values(errors[fieldName]).map(
+                                (message, i) => (
+                                    <p key={`${fieldName}-${i}`}>{message}</p>
+                                )
+                            )}
+                        </div>
+                    ))}
                 </div>
-
-                <MyList films={films} />
-
                 <footer className="page-footer">
                     <div className="logo">
                         <a href="/" className="logo__link logo__link--light">
