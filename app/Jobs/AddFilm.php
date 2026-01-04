@@ -33,7 +33,7 @@ class AddFilm implements ShouldQueue
         // Получение информации
         $data = $repository->getFilm($this->film->imdb_id);
 
-        if(empty($data)) {
+        if(empty($data) || $data.Error) {
             throw new FilmsRepositoryException('Отсутствуют данные для обновления');
         }
 

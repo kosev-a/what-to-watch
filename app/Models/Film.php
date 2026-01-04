@@ -32,11 +32,6 @@ class Film extends Model
         "status"
     ];
 
-    // public function comments(): HasMany
-    // {
-    //     return $this->hasMany(Comment::class);
-    // }
-
     // отношение рейтинг
     // public function rating(): HasMany
     // {
