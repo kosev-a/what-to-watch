@@ -15,11 +15,12 @@ function Profile(props) {
     const [imdbId, setImdbId] = useState("");
 
     const [message, setMessage] = useState("");
+    const [errorAddingFilm, setErrorAddingFilm] = useState("");
     const [errors, setErrors] = useState({}); // Для ошибок по полям
 
     // Получение данных о пользователе
     const { data, isLoading, error } = useQuery({
-        queryKey: ["user"], // Уникальный ключ
+        queryKey: ["user", user], // Уникальный ключ
         queryFn: async () => {
             const response = await axios.get(`${apiUrl}/api/user/${user}`);
             const result = response.data.data;
@@ -27,6 +28,7 @@ function Profile(props) {
             return result;
         },
         staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
+        enabled: !!user,
     });
 
     // Обработчик изменения полей формы
@@ -46,7 +48,7 @@ function Profile(props) {
             // console.log(data);
 
             setMessage("IMDB id фильма успешно добавлен в базу");
-            // setError(null);
+            setErrorAddingFilm(null);
 
             setImdbId("");
         } catch (err) {
@@ -54,7 +56,7 @@ function Profile(props) {
                 setMessage("");
                 // Сервер ответил, но статус ошибки (например 422)
                 const { message, errors: validationErrors } = err.response.data;
-                // setError(message || "Произошла ошибка при отправке формы.");
+                setErrorAddingFilm(message || "Произошла ошибка при добавлении ID фильма в базу.");
                 if (validationErrors) {
                     setErrors(validationErrors);
                     console.log(err.response.data.errors); // Устанавливаем ошибки по полям
@@ -62,11 +64,11 @@ function Profile(props) {
             } else if (error.request) {
                 setMessage("");
                 // Запрос был сделан, но ответ не получен (сеть, 500 ошибка)
-                // setError("Ошибка сети или сервера. Попробуйте позже.");
+                setErrorAddingFilm("Ошибка сети или сервера. Попробуйте позже.");
             } else {
                 setMessage("");
                 // Что-то пошло не так при настройке запроса
-                // setError("Неизвестная ошибка.");
+                setErrorAddingFilm("Неизвестная ошибка.");
             }
         }
     };
@@ -184,19 +186,22 @@ function Profile(props) {
                             {isLoading && (
                                 <p className="user-profile__name">Loading...</p>
                             )}
-                            {data && ( data.avatar_path ?
-                                (<img
-                                    src={`${apiUrl}/storage/${data.avatar_path}`}
-                                    alt=""
-                                    width="150"
-                                    height="150"
-                                />) : (<img
-                                    src="img/avatar.jpg"
-                                    alt=""
-                                    width="150"
-                                    height="150"
-                                />)
-                            )}
+                            {data &&
+                                (data.avatar_path ? (
+                                    <img
+                                        src={`${apiUrl}/storage/${data.avatar_path}`}
+                                        alt=""
+                                        width="150"
+                                        height="150"
+                                    />
+                                ) : (
+                                    <img
+                                        src="img/avatar.jpg"
+                                        alt=""
+                                        width="150"
+                                        height="150"
+                                    />
+                                ))}
                         </div>
                         <div className="user-profile__text">
                             {data && (
@@ -247,37 +252,39 @@ function Profile(props) {
                             </div>
                         </div>
                     </div>
-                    <form onSubmit={handleSubmit} className="sign-in__form">
-                        <div className="sign-in__fields">
-                            <div className="sign-in__field">
-                                <p className="add_movie_text">
-                                    Add a movie to the database
-                                </p>
-                                <input
-                                    className="sign-in__input"
-                                    type="text"
-                                    placeholder="Enter IMDB id"
-                                    name="imdbId"
-                                    id="imdbId"
-                                    onChange={handleChange}
-                                    value={imdbId}
-                                />
-                                <label
-                                    className="sign-in__label visually-hidden"
-                                    htmlFor="imdbId"
-                                >
-                                    Add a movie
-                                </label>
+                    <div>
+                        <form onSubmit={handleSubmit} className="sign-in__form">
+                            <div className="sign-in__fields">
+                                <div className="sign-in__field">
+                                    <p className="add_movie_text">
+                                        Add a movie to the database
+                                    </p>
+                                    <input
+                                        className="sign-in__input"
+                                        type="text"
+                                        placeholder="Enter IMDB id"
+                                        name="imdbId"
+                                        id="imdbId"
+                                        onChange={handleChange}
+                                        value={imdbId}
+                                    />
+                                    <label
+                                        className="sign-in__label visually-hidden"
+                                        htmlFor="imdbId"
+                                    >
+                                        Add a movie
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div className="sign-in__submit">
-                            <button className="sign-in__btn" type="submit">
-                                OK
-                            </button>
-                        </div>
-                    </form>
-                    {message}
-                    {error}
+                            <div className="sign-in__submit">
+                                <button className="sign-in__btn" type="submit">
+                                    OK
+                                </button>
+                            </div>
+                        </form>
+                        {message}
+                        {errorAddingFilm}
+                    </div>
                 </div>
 
                 <MyList films={films} />

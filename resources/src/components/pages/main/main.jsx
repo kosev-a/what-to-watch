@@ -20,23 +20,22 @@ function Main(props) {
     const [avatarSrc, setAvatarSrc] = useState("");
 
     // Получение данных о пользователе
-    if (user) {
-        const { data, isLoading, error } = useQuery({
-            queryKey: ["user"], // Уникальный ключ
-            queryFn: async () => {
-                const response = await axios.get(`${apiUrl}/api/user/${user}`);
-                const result = response.data.data;
-                console.log(result);
-                if (result.avatar_path) {
-                    setAvatarSrc(`${apiUrl}/storage/${result.avatar_path}`);
-                } else {
-                    setAvatarSrc("img/avatar.jpg");
-                }
-                return result;
-            },
-            staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
-        });
-    }
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["user", user], // Уникальный ключ
+        queryFn: async () => {
+            const response = await axios.get(`${apiUrl}/api/user/${user}`);
+            const result = response.data.data;
+            console.log(result);
+            if (result.avatar_path) {
+                setAvatarSrc(`${apiUrl}/storage/${result.avatar_path}`);
+            } else {
+                setAvatarSrc("img/avatar.jpg");
+            }
+            return result;
+        },
+        staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
+        enabled: !!user,
+    });
 
     return (
         <React.Fragment>
@@ -238,19 +237,21 @@ function Main(props) {
                                     </svg>
                                     <span>Play</span>
                                 </button>
-                                <button
-                                    className="btn btn--list film-card__button"
-                                    type="button"
-                                >
-                                    <svg
-                                        viewBox="0 0 19 20"
-                                        width="19"
-                                        height="20"
+                                {user && (
+                                    <button
+                                        className="btn btn--list film-card__button"
+                                        type="button"
                                     >
-                                        <use xlinkHref="#add"></use>
-                                    </svg>
-                                    <span>My list</span>
-                                </button>
+                                        <svg
+                                            viewBox="0 0 19 20"
+                                            width="19"
+                                            height="20"
+                                        >
+                                            <use xlinkHref="#add"></use>
+                                        </svg>
+                                        <span>My list</span>
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>

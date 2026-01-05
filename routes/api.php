@@ -25,9 +25,9 @@ Route::get('/user/{id}', [UserController::class, 'show']);
 Route::patch('/user', [UserController::class, 'update'])
     ->middleware('auth:sanctum');
 
-// Route::apiResource('films', FilmController::class);
 Route::get('/films/{id}/comments', [FilmController::class, 'show']);
-Route::post('/films', [FilmController::class, 'store']);
+Route::post('/films', [FilmController::class, 'store'])
+    ->middleware('auth:sanctum');
 
 Route::apiResource('genres', GenreController::class);
 
