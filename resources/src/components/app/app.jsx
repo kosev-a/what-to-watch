@@ -8,14 +8,11 @@ import SignIn from "../pages/signin/signin";
 import SignUp from "../pages/signup/signup";
 import Profile from "../pages/profile/profile";
 import EditProfile from "../pages/edit-profile/editProfile";
-import MyList from "../pages/mylist/mylist";
 import Film from "../pages/film/film";
-// import Review from "../ui/review/review";
 import ReviewForm from "../ui/review-form/review-form";
 import EditReviewForm from "../ui/edit-review-form/edit-review-form";
 import Player from "../pages/player/player";
 import filmProp from "../ui/card/card.prop";
-import reviewProp from "../ui/review/review.prop";
 import { getFilm, getReviews } from "../../utils/utils";
 
 function App(props) {
@@ -67,7 +64,6 @@ function App(props) {
 
     //получение информации о пользователе
     useEffect(() => {
-        // let ignore = false; // Флаг для отслеживания, следует ли игнорировать результат
         if (user) {
             (async () => {
                 try {
@@ -76,11 +72,8 @@ function App(props) {
                     );
                     const result = response.data.data;
                     console.log(result);
-                    // if (!ignore) {
-                    setUserData(result); // Устанавливаем состояние только если компонент не был размонтирован
-                    // }
+                    setUserData(result);
                 } catch (err) {
-                    // if (!ignore) {
                     console.error(
                         "Произошла ошибка при получении данных профиля:",
                         err
@@ -88,15 +81,9 @@ function App(props) {
                     setUserDataError(
                         "Произошла ошибка при получении данных профиля."
                     );
-                    // }
                 }
             })();
         }
-
-        // // Функция очистки
-        // return () => {
-        //     ignore = true; // Устанавливаем флаг в true при размонтировании компонента или перед следующим запуском эффекта
-        // };
     }, [user]);
 
     return (
@@ -119,22 +106,22 @@ function App(props) {
                     <SignUp />
                 </Route>
                 <Route path={`${AppRoute.PROFILE}/:id`} exact>
-                    <Profile
-                        user={user}
-                        films={films}
-                        onLogout={handleLogout}
-                    />
+                    {user ? (
+                        <Profile
+                            user={user}
+                            films={films}
+                            onLogout={handleLogout}
+                        />
+                    ) : (
+                        <Redirect to="/login" />
+                    )}
                 </Route>
                 <Route path={`${AppRoute.PROFILE}/edit/:id`} exact>
-                    <EditProfile
-                        avatarSrc={avatarSrc}
-                        userId={user}
-                        films={films}
-                        userData={userData}
-                        setUserData={setUserData}
-                        setAvatar={setAvatar}
-                        onLogout={handleLogout}
-                    />
+                    {user ? (
+                        <EditProfile userId={user} userData={userData} />
+                    ) : (
+                        <Redirect to="/login" />
+                    )}
                 </Route>
                 {/* <Route path="/mylist" exact>
                     <MyList films={films} />

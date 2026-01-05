@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddFilmRequest;
 use App\Http\Resources\FilmResource;
-use App\Models\Actor;
 use App\Models\Film;
-use App\Models\Genre;
-use App\Support\Import\FilmsRepository;
-use App\Support\Import\OmdbFilmsRepository;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class FilmController extends Controller
 {
@@ -27,11 +25,17 @@ class FilmController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddFilmRequest $request): Responsable
+    public function store(AddFilmRequest $request): JsonResponse|Responsable
     {
         $validated = $request->validated();
 
         // Debugbar::info($validated['imdbId']);
+
+        if ($request->user()->cannot('create', Film::class)) {
+
+            return response()->json(['message' => 'Действие доступно только администратору'], 403);
+        }
+
         Film::create(['imdb_id' => $validated['imdbId']]);
 
         return $this->success(null, 201);
