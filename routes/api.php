@@ -26,6 +26,9 @@ Route::patch('/user', [UserController::class, 'update'])
     ->middleware('auth:sanctum');
 
 Route::get('/films/{id}/comments', [FilmController::class, 'show']);
+// получение списка фильмов для модерации
+Route::get('/films/moderation', [FilmController::class, 'getModeration'])
+    ->middleware('auth:sanctum');
 Route::post('/films', [FilmController::class, 'store'])
     ->middleware('auth:sanctum');
 

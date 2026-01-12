@@ -56,7 +56,10 @@ function Profile(props) {
                 setMessage("");
                 // Сервер ответил, но статус ошибки (например 422)
                 const { message, errors: validationErrors } = err.response.data;
-                setErrorAddingFilm(message || "Произошла ошибка при добавлении ID фильма в базу.");
+                setErrorAddingFilm(
+                    message ||
+                        "Произошла ошибка при добавлении ID фильма в базу."
+                );
                 if (validationErrors) {
                     setErrors(validationErrors);
                     console.log(err.response.data.errors); // Устанавливаем ошибки по полям
@@ -64,7 +67,9 @@ function Profile(props) {
             } else if (error.request) {
                 setMessage("");
                 // Запрос был сделан, но ответ не получен (сеть, 500 ошибка)
-                setErrorAddingFilm("Ошибка сети или сервера. Попробуйте позже.");
+                setErrorAddingFilm(
+                    "Ошибка сети или сервера. Попробуйте позже."
+                );
             } else {
                 setMessage("");
                 // Что-то пошло не так при настройке запроса
@@ -284,6 +289,12 @@ function Profile(props) {
                         </form>
                         {message}
                         {errorAddingFilm}
+                        <Link
+                            to="/movie-moderation"
+                            className="user-profile__link user-profile__moderation-movie-link"
+                        >
+                            Movie moderation
+                        </Link>
                     </div>
                 </div>
 

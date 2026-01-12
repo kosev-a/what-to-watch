@@ -8,6 +8,7 @@ import SignIn from "../pages/signin/signin";
 import SignUp from "../pages/signup/signup";
 import Profile from "../pages/profile/profile";
 import EditProfile from "../pages/edit-profile/editProfile";
+import MovieModeration from "../pages/movie-moderation/movieModeration";
 import Film from "../pages/film/film";
 import ReviewForm from "../ui/review-form/review-form";
 import EditReviewForm from "../ui/edit-review-form/edit-review-form";
@@ -119,6 +120,13 @@ function App(props) {
                 <Route path={`${AppRoute.PROFILE}/edit/:id`} exact>
                     {user ? (
                         <EditProfile userId={user} userData={userData} />
+                    ) : (
+                        <Redirect to="/login" />
+                    )}
+                </Route>
+                <Route path="/movie-moderation" exact>
+                    {user ? (
+                        <MovieModeration userId={user} userData={userData} />
                     ) : (
                         <Redirect to="/login" />
                     )}
