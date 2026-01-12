@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddFilmRequest;
 use App\Http\Resources\FilmResource;
+use App\Http\Resources\ModerateFilmCollection;
+// use App\Http\Resources\ModerateFilmResource;
 use App\Models\Film;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Illuminate\Contracts\Support\Responsable;
@@ -69,13 +71,20 @@ class FilmController extends Controller
     //     //
     // }
 
-    public function getComments(int $id)
-    {
+    // public function getComments(int $id)
+    // {
         // $film = Film::find($id);
 
         // $comments = $film->comments->toArray();
 
         // // return $comments;
         // return response()->json($comments);
+    // }
+
+    public function getModeration()
+    {
+        $films = Film::get()->where('status', 'moderate');
+        
+        return new ModerateFilmCollection($films);
     }
 }
