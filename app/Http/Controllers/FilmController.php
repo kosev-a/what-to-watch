@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AddFilmRequest;
 use App\Http\Resources\FilmResource;
 use App\Http\Resources\ModerateFilmCollection;
+use App\Http\Resources\EditFilmResource;
 // use App\Http\Resources\ModerateFilmResource;
 use App\Models\Film;
 use Barryvdh\Debugbar\Facade as Debugbar;
@@ -13,6 +14,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Support\Import\OmdbFilmsRepository;
+use Illuminate\Support\Facades\Http;
 
 class FilmController extends Controller
 {
@@ -71,20 +74,21 @@ class FilmController extends Controller
     //     //
     // }
 
-    // public function getComments(int $id)
-    // {
-        // $film = Film::find($id);
-
-        // $comments = $film->comments->toArray();
-
-        // // return $comments;
-        // return response()->json($comments);
-    // }
-
-    public function getModeration()
+    public function getModeration(): ModerateFilmCollection
     {
-        $films = Film::get()->where('status', 'moderate');
+        $films = Film::get()->whereIn('status', ['moderate', 'pending']);
         
         return new ModerateFilmCollection($films);
+    }
+
+    public function getEditFilm(string $imdbId)
+    {
+        $film = Film::with(['actors', 'genres'])->where('imdb_id', $imdbId)->first();
+
+        if (!$film) {
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+
+        return new EditFilmResource($film);
     }
 }

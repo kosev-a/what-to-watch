@@ -46,15 +46,9 @@ class OmdbFilmsRepository implements FilmsRepository
             'title' => $data['Title'],
             'description' => $data['Plot'],
             'director' => $data['Director'],
-            // 'starring' => $data['actors'],
             'run_time' => (int)$data['Runtime'],
             'released' => (int)substr($data['Released'], -4),
-            // 'status' => '',
             'poster_image' => $data['Poster'],
-            // 'preview_image' => $data['icon'],
-            // 'background_image' => $data['background'],
-            // 'video_link' => $data['video'],
-            // 'preview_video_link' => $data['preview'],
         ]);
 
         return [

@@ -17,19 +17,20 @@ class Film extends Model
     public const STATUS_READY = 'ready';
     
     protected $fillable = [
-        "imdb_id",
-        "title",
-        "poster_image",
-        "preview_image",
-        "background_image",
-        "background_color",
-        "director",
-        "run_time",
-        "released",
-        "video_link",
-        "preview_video_link",
-        "is_promo",
-        "status"
+        'imdb_id',
+        'title',
+        'poster_image',
+        'preview_image',
+        'background_image',
+        'background_color',
+        'director',
+        'run_time',
+        'released',
+        'video_link',
+        'preview_video_link',
+        'description',
+        'is_promo',
+        'status'
     ];
 
     // отношение рейтинг

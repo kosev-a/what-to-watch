@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('genres', function (Blueprint $table) {
             $table->id();
             $table
-                ->enum('name', ['comedy', 'crime', 'documentory', 'drama', 'horror', 'kids_and_family', 'romance', 'sci-fi', 'thriller'])
+                ->string('name')
                 ->nullable();
         });
     }

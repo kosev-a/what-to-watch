@@ -4,10 +4,10 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\CommentResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\EditActorResource;
+use App\Http\Resources\EditGenreResource;
 
-class FilmResource extends JsonResource
+class EditFilmResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,13 +17,11 @@ class FilmResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'=> $this->id,
             'title' => $this->title,
             'poster_image' => $this->poster_image,
             'preview_image' => $this->preview_image,
             'background_image' => $this->background_image,
             'background_color' => $this->background_color,
-            'scores_count' => $this->scores_count,
             'director' => $this->director,
             'run_time' => $this->run_time,
             'released' => $this->released,
@@ -31,8 +29,8 @@ class FilmResource extends JsonResource
             'preview_video_link' => $this->preview_video_link,
             'description' => $this->description,
             'isPromo' => $this->isPromo,
-            'status' => $this->status,
-            'comments' => CommentResource::collection($this->whenLoaded('comments')),
+            'actors' => EditActorResource::collection($this->whenLoaded('actors')),
+            'genres' => EditGenreResource::collection($this->whenLoaded('genres')),
         ];
     }
 }
