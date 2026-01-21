@@ -9,6 +9,7 @@ import SignUp from "../pages/signup/signup";
 import Profile from "../pages/profile/profile";
 import EditProfile from "../pages/edit-profile/editProfile";
 import MovieModeration from "../pages/movie-moderation/movieModeration";
+import EditMovie from "../pages/edit-movie/editMovie";
 import Film from "../pages/film/film";
 import ReviewForm from "../ui/review-form/review-form";
 import EditReviewForm from "../ui/edit-review-form/edit-review-form";
@@ -72,7 +73,6 @@ function App(props) {
                         `${apiUrl}/api/user/${user}`
                     );
                     const result = response.data.data;
-                    console.log(result);
                     setUserData(result);
                 } catch (err) {
                     console.error(
@@ -130,6 +130,9 @@ function App(props) {
                     ) : (
                         <Redirect to="/login" />
                     )}
+                </Route>
+                <Route path={"/edit-movie/:imdbId"} exact>
+                    <EditMovie userId={user} userData={userData} />
                 </Route>
                 {/* <Route path="/mylist" exact>
                     <MyList films={films} />

@@ -18,12 +18,7 @@ function MovieModeration(props) {
         },
         staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
     });
-
-    // if (!isLoading) {
-    //     Object.values(data).map((film) => {
-    //         console.log(film);
-    //     });
-    // }
+    console.log(data);
 
     return (
         <React.Fragment>
@@ -135,7 +130,8 @@ function MovieModeration(props) {
                     </h1>
                 </header>
                 <div className="movie-moderation">
-                    {isLoading && <p>Loading...</p>}
+                    {isLoading && <p className="text-info">Loading...</p>}
+                    {data && !data.length && <p className="text-info">There are no movies to display</p>}
                     {data &&
                         Object.keys(data).map((key) => {
                             return (

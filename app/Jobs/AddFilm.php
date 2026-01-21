@@ -14,6 +14,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AddFilm implements ShouldQueue
 {
@@ -32,12 +33,15 @@ class AddFilm implements ShouldQueue
     {
         // Получение информации
         $data = $repository->getFilm($this->film->imdb_id);
+        // Log::info($data);
 
-        if(empty($data) || $data.Error) {
+        if(empty($data)) {
             throw new FilmsRepositoryException('Отсутствуют данные для обновления');
         }
 
         $this->film = $data['film'];
+
+        // Log::info($this->film);
 
         DB::beginTransaction();
 
