@@ -32,6 +32,9 @@ Route::get('/films/moderation', [FilmController::class, 'getModeration'])
 // получение фильма для редактирования
 Route::get('/edit-film/{imdbId}', [FilmController::class, 'getEditFilm'])
     ->middleware('auth:sanctum');
+// сохранение информации о фильме после редактирования
+Route::patch('/film/{id}', [FilmController::class, 'update'])
+    ->middleware('auth:sanctum');
 Route::post('/films', [FilmController::class, 'store'])
     ->middleware('auth:sanctum');
 

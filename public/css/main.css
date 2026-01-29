@@ -1890,6 +1890,23 @@ main {
     margin: 1rem;
 }
 
+.movie-edit__field-select > label {
+    font-size: 1.6rem;
+    margin: 2rem;
+}
+
+.movie-edit__field-textarea {
+    height: 20rem;
+    white-space: pre-wrap; 
+    word-wrap:normal;
+    resize: vertical;
+}
+
+.movie-edit__field-runtime__measure {
+    font-size: 2rem;
+    margin: 1.2rem;
+}
+
 .movie-edit__post-btn {
     width: 10rem;
     margin: 2rem auto;

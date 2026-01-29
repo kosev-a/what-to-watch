@@ -17,6 +17,8 @@ class EditFilmResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
+            'imdb_id'=>$this->imdb_id,
             'title' => $this->title,
             'poster_image' => $this->poster_image,
             'preview_image' => $this->preview_image,
@@ -31,6 +33,7 @@ class EditFilmResource extends JsonResource
             'isPromo' => $this->isPromo,
             'actors' => EditActorResource::collection($this->whenLoaded('actors')),
             'genres' => EditGenreResource::collection($this->whenLoaded('genres')),
+            'status' => $this->status,
         ];
     }
 }

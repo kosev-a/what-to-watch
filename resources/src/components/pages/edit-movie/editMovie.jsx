@@ -5,32 +5,36 @@ import axios from "axios";
 
 export default EditMovie;
 
-function EditMovie(props) {
+function EditMovie() {
     const apiUrl = import.meta.env.VITE_APP_URL;
 
     const params = useParams();
-
-    const { userData, userId } = props;
 
     const navigate = useHistory();
 
     const [dataMovie, setDataMovie] = useState({
         id: "",
+        imdbId: "",
         title: "",
         description: "",
-        poster_image: "",
-        preview_image: "",
-        background_image: "",
-        background_color: "#fff",
+        posterImage: "",
+        previewImage: "",
+        backgroundImage: "",
+        backgroundColor: "#fff",
         director: "",
-        run_time: "",
+        runTime: "",
         released: "",
-        video_link: "",
-        preview_video_link: "",
-        is_promo: false,
+        videoLink: "",
+        previewVideoLink: "",
+        isPromo: false,
         actors: "",
         genres: "",
+        status: "",
     });
+
+    const [message, setMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [errors, setErrors] = useState({}); // Для ошибок по полям
 
     // Получение данных о фильме
     const { data, isLoading, error } = useQuery({
@@ -42,8 +46,52 @@ function EditMovie(props) {
             const result = response.data.data;
             return result;
         },
-        staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
+        // staleTime: 5 * 60 * 1000, // Данные считаются "свежими" 5 минут
     });
+
+    //функция для приведения actors и genres к строке
+    const getStrFromArray = (array) => {
+        const arr = array.reduce((newArray, item) => {
+            return [...newArray, item.name];
+        }, []);
+
+        return arr.join(", ");
+    };
+
+    //функция для приведения actors и genres к массиву
+    const getArrayFromStr = (str) => {
+        const arr = str.split(", ");
+        return arr;
+    };
+
+    useEffect(() => {
+        data &&
+            setDataMovie({
+                id: data.id ? data.id : "",
+                imdbId: data.imdb_id ? data.imdb_id : "",
+                title: data.title ? data.title : "",
+                description: data.description ? data.description : "",
+                posterImage: data.poster_image ? data.poster_image : "",
+                previewImage: data.preview_image ? data.preview_image : "",
+                backgroundImage: data.background_image
+                    ? data.background_image
+                    : "",
+                backgroundColor: data.background_color
+                    ? data.background_color
+                    : "#fff",
+                director: data.director ? data.director : "",
+                runTime: data.run_time ? data.run_time : "",
+                released: data.released ? data.released : "",
+                videoLink: data.video_link ? data.video_link : "",
+                previewVideoLink: data.preview_video_link
+                    ? data.preview_video_link
+                    : "",
+                isPromo: data.is_promo ? data.is_promo : false,
+                actors: data.actors ? getStrFromArray(data.actors) : "",
+                genres: data.genres ? getStrFromArray(data.genres) : "",
+                status: data.status ? data.status : "",
+            });
+    }, [data]);
 
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState("Файл не выбран");
@@ -61,16 +109,9 @@ function EditMovie(props) {
         }
     };
 
-    const [promoText, setPromoText] = useState("Set promo");
-
-    //обработчик изменения статуса "promo"
-    const handlePromoChange = (e) => {
-        setDataMovie({ ...dataMovie, is_promo: !dataMovie.is_promo });
-    };
-
-    //обработчик изменения backgroundColor
-    const handleColorChange = (e) => {
-        setDataMovie({ ...dataMovie, background_color: e.target.value });
+    // Обработчик изменения статуса "promo"
+    const handlePromoChange = () => {
+        setDataMovie({ ...dataMovie, isPromo: !dataMovie.isPromo });
     };
 
     // Обработчик изменения полей формы
@@ -78,24 +119,43 @@ function EditMovie(props) {
         setDataMovie({ ...dataMovie, [e.target.name]: e.target.value });
     };
 
+    // ввод в форме только цифр
+    const handleNumChange = (e) => {
+        setDataMovie({
+            ...dataMovie,
+            [e.target.name]: e.target.value.replace(/\D/g, ""),
+        });
+    };
+
     // Обработчик отправки формы
     const queryClient = useQueryClient(); // Для инвалидации кэша
 
     const mutation = useMutation({
         mutationFn: async () => {
-            // e.preventDefault();
+            //преобразование в массив actors и genres
+            const fetchData = {
+                ...dataMovie,
+                actors: getArrayFromStr(dataMovie.actors),
+                genres: getArrayFromStr(dataMovie.genres),
+            };
+            // console.log(fetchData);
 
             const formData = new FormData();
             //добавление данных в formData
-            Object.entries(data).forEach(([key, value]) => {
-                formData.append(key, value);
-            });
+            formData.append("payload", JSON.stringify(fetchData));
             formData.append("image", file);
+
             // стандартный механизм подмены метода (Method Spoofing) - важнейший шаг для Laravel:
             formData.append("_method", "PATCH");
 
             // Отправляем POST, но добавляем в FormData специальное поле _method со значением 'PATCH'
-            const response = await axios.post(`${apiUrl}/api/user`, formData);
+            const response = await axios.post(
+                `${apiUrl}/api/film/${dataMovie.id}`,
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                },
+            );
             console.log("Данные успешно отправлены:", response.data);
 
             const result = response.data.data;
@@ -103,48 +163,67 @@ function EditMovie(props) {
             return result;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["user"] }); // Инвалидация кэша после успеха
-            // setError(null);
-            // setMessage("Данные успешно отправлены");
-            setTimeout(() => {
-                navigate.push(`/profile/${userId}`);
-            }, 2000);
+            queryClient.invalidateQueries({
+                queryKey: ["film", dataMovie.id],
+            }); // Инвалидация кэша после успеха
+            setErrorMessage("");
+            setMessage("Данные успешно отправлены");
+            // setTimeout(() => {
+            //     navigate.goBack();
+            // }, 2000);
         },
         onError: (err) => {
             if (err.response) {
                 // Сервер ответил, но статус ошибки (например 422)
                 const { message, errors: validationErrors } = err.response.data;
-                // setError(message || "Произошла ошибка при отправке формы.");
+                setErrorMessage(
+                    message || "Произошла ошибка при отправке формы.",
+                );
                 if (validationErrors) {
-                    // setErrors(validationErrors); // Устанавливаем ошибки по полям
-                    // setMessage("");
+                    setErrors(validationErrors); // Устанавливаем ошибки по полям
+                    setMessage("");
                 }
             } else if (err.request) {
                 // Запрос был сделан, но ответ не получен (сеть, 500 ошибка)
-                // setError("Ошибка сети или сервера. Попробуйте позже.");
-                // setMessage("");
+                setErrorMessage("Ошибка сети или сервера. Попробуйте позже.");
+                setMessage("");
             } else {
                 // Что-то пошло не так при настройке запроса
-                // setError("Неизвестная ошибка.");
-                // setMessage("");
+                setErrorMessage("Неизвестная ошибка.");
+                setMessage("");
             }
         },
     });
 
-    const renderArray = (array) => {
-        const arr = array.reduce((newArray, item) => {
-            return [...newArray, item.name];
-        }, []);
-
-        return arr.join(", ");
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        mutation.mutate({ name: data.name, email: data.email });
+        //преобразование в массив actors и genres
+        // const fetchData = {
+        //     ...dataMovie,
+        //     actors: getArrayFromStr(dataMovie.actors),
+        //     genres: getArrayFromStr(dataMovie.genres),
+        // };
+        console.log(dataMovie);
+        mutation.mutate({
+            imdbId: dataMovie.imdbId,
+            title: dataMovie.title,
+            description: dataMovie.description,
+            posterImage: dataMovie.posterImage,
+            previewImage: dataMovie.previewImage,
+            backgroundImage: dataMovie.backgroundImage,
+            backgroundColor: dataMovie.backgroundColor,
+            director: dataMovie.director,
+            runTime: dataMovie.runTime,
+            released: dataMovie.released,
+            videoLink: dataMovie.videoLink,
+            previewVideoLink: dataMovie.previewVideoLink,
+            isPromo: dataMovie.isPromo,
+            actors: dataMovie.actors,
+            genres: dataMovie.genres,
+            status: dataMovie.status,
+        });
     };
 
-    console.log(data);
     return (
         <React.Fragment>
             <div className="visually-hidden">
@@ -252,9 +331,6 @@ function EditMovie(props) {
                     </div>
                     <h1 className="page-title user-page__title">Edit Movie</h1>
                 </header>
-                <h2 className="movie-edit__content-h2">
-                    IMDB id: {params.imdbId}
-                </h2>
                 <div className="user-page__content movie-edit__content">
                     {isLoading && <p>Loading...</p>}
                     {data && (
@@ -264,7 +340,23 @@ function EditMovie(props) {
                                     <div className="movie-edit__field">
                                         <label
                                             className="sign-in__label"
-                                            htmlFor="name"
+                                            htmlFor="imdbId"
+                                        >
+                                            IMDB id
+                                        </label>
+                                        <input
+                                            className="sign-in__input"
+                                            type="text"
+                                            name="imdbId"
+                                            id="imdbId"
+                                            onChange={handleChange}
+                                            value={dataMovie.imdbId}
+                                        />
+                                    </div>
+                                    <div className="movie-edit__field">
+                                        <label
+                                            className="sign-in__label"
+                                            htmlFor="title"
                                         >
                                             Title
                                         </label>
@@ -274,7 +366,7 @@ function EditMovie(props) {
                                             name="title"
                                             id="title"
                                             onChange={handleChange}
-                                            value={data.title}
+                                            value={dataMovie.title}
                                         />
                                     </div>
                                     <div className="movie-edit__field">
@@ -290,7 +382,7 @@ function EditMovie(props) {
                                             name="director"
                                             id="director"
                                             onChange={handleChange}
-                                            value={data.director}
+                                            value={dataMovie.director}
                                         />
                                     </div>
                                     <div className="movie-edit__field">
@@ -300,17 +392,13 @@ function EditMovie(props) {
                                         >
                                             Description
                                         </label>
-                                        <input
-                                            className="sign-in__input"
-                                            type="textarea"
+                                        <textarea
+                                            className="sign-in__input movie-edit__field-textarea"
+                                            spellCheck="false"
                                             name="description"
                                             id="description"
                                             onChange={handleChange}
-                                            value={
-                                                data.description
-                                                    ? data.description
-                                                    : ""
-                                            }
+                                            value={dataMovie.description}
                                         />
                                     </div>
                                     <div className="movie-edit__fields-double">
@@ -326,8 +414,8 @@ function EditMovie(props) {
                                                 type="text"
                                                 name="released"
                                                 id="released"
-                                                onChange={handleChange}
-                                                value={data.released}
+                                                onChange={handleNumChange}
+                                                value={dataMovie.released}
                                             />
                                         </div>
                                         <div className="movie-edit__field movie-edit__field-double">
@@ -342,14 +430,16 @@ function EditMovie(props) {
                                                 type="text"
                                                 name="runTime"
                                                 id="runTime"
-                                                onChange={handleChange}
+                                                onChange={handleNumChange}
                                                 value={
-                                                    data.run_time
-                                                        ? data.run_time +
-                                                          " min."
+                                                    dataMovie.runTime
+                                                        ? dataMovie.runTime
                                                         : ""
                                                 }
                                             />
+                                            <p className="movie-edit__field-runtime__measure">
+                                                min.
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="movie-edit__field">
@@ -366,8 +456,8 @@ function EditMovie(props) {
                                             id="actors"
                                             onChange={handleChange}
                                             value={
-                                                data.actors
-                                                    ? renderArray(data.actors)
+                                                dataMovie.actors
+                                                    ? dataMovie.actors
                                                     : ""
                                             }
                                         />
@@ -386,8 +476,8 @@ function EditMovie(props) {
                                             id="genres"
                                             onChange={handleChange}
                                             value={
-                                                data.genres
-                                                    ? renderArray(data.genres)
+                                                dataMovie.genres
+                                                    ? dataMovie.genres
                                                     : ""
                                             }
                                         />
@@ -405,11 +495,23 @@ function EditMovie(props) {
                                             name="posterImage"
                                             id="posterImage"
                                             onChange={handleChange}
-                                            value={
-                                                data.poster_image
-                                                    ? data.poster_image
-                                                    : ""
-                                            }
+                                            value={dataMovie.posterImage}
+                                        />
+                                    </div>
+                                    <div className="movie-edit__field">
+                                        <label
+                                            className="sign-in__label"
+                                            htmlFor="previewImage"
+                                        >
+                                            Preview image
+                                        </label>
+                                        <input
+                                            className="sign-in__input"
+                                            type="text"
+                                            name="previewImage"
+                                            id="previewImage"
+                                            onChange={handleChange}
+                                            value={dataMovie.previewImage}
                                         />
                                     </div>
                                     <div className="movie-edit__field">
@@ -425,11 +527,7 @@ function EditMovie(props) {
                                             name="videoLink"
                                             id="videoLink"
                                             onChange={handleChange}
-                                            value={
-                                                data.video_link
-                                                    ? data.video_link
-                                                    : ""
-                                            }
+                                            value={dataMovie.videoLink}
                                         />
                                     </div>
                                     <div className="movie-edit__field">
@@ -445,11 +543,7 @@ function EditMovie(props) {
                                             name="previewVideoLink"
                                             id="previewVideoLink"
                                             onChange={handleChange}
-                                            value={
-                                                data.preview_video_link
-                                                    ? data.preview_video_link
-                                                    : ""
-                                            }
+                                            value={dataMovie.previewVideoLink}
                                         />
                                     </div>
                                 </div>
@@ -466,45 +560,62 @@ function EditMovie(props) {
                                             name="backgroundImage"
                                             id="backgroundImage"
                                             onChange={handleFileChange}
-                                            value={
-                                                data.background_image
-                                                    ? data.background_image
-                                                    : ""
-                                            }
+                                            value={dataMovie.backgroundImage}
                                         />
                                     </div>
                                     <div className="movie-edit__field-right">
-                                        <label
-                                            htmlFor="backgroundColor"
-                                        >
+                                        <label htmlFor="backgroundColor">
                                             Set background color
                                         </label>
                                         <div className="movie-edit__color-info">
                                             <p>Current color:</p>
-                                            <div className="movie-edit__color-sample" style={{backgroundColor: dataMovie.background_color}}></div>
+                                            <div
+                                                className="movie-edit__color-sample"
+                                                style={{
+                                                    backgroundColor:
+                                                        dataMovie.backgroundColor,
+                                                }}
+                                            ></div>
                                         </div>
                                         <input
                                             className="visually-hidden"
                                             type="color"
                                             name="backgroundColor"
                                             id="backgroundColor"
-                                            onChange={handleColorChange}
+                                            onChange={handleChange}
                                         />
                                     </div>
                                     <div className="movie-edit__field-right">
-                                        <label
-                                            htmlFor="isPromo"
-                                        >
-                                            {dataMovie.is_promo ? "Unset promo" : "Set promo"}
+                                        <label htmlFor="isPromo">
+                                            {dataMovie.isPromo
+                                                ? "Unset promo"
+                                                : "Set promo"}
                                         </label>
                                         <input
                                             className="visually-hidden"
                                             type="checkbox"
                                             name="isPromo"
                                             id="isPromo"
-                                            value={dataMovie.is_promo}
+                                            value={dataMovie.isPromo}
                                             onChange={handlePromoChange}
                                         />
+                                    </div>
+                                    <div className="movie-edit__field-select">
+                                        <label htmlFor="status">Status</label>
+                                        <select
+                                            name="status"
+                                            id="status"
+                                            value={dataMovie.status}
+                                            onChange={handleChange}
+                                        >
+                                            <option value="pending">
+                                                Pending
+                                            </option>
+                                            <option value="moderate">
+                                                Moderate
+                                            </option>
+                                            <option value="ready">Ready</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -515,18 +626,18 @@ function EditMovie(props) {
                             </div>
                         </form>
                     )}
-                    {/* <p>{message}</p> */}
-                    {/* <p>{error}</p> */}
+                    <p>{message}</p>
+                    <p>{errorMessage}</p>
                     {/* отображение ошибок валидации */}
-                    {/* {Object.keys(errors).map((fieldName) => (
+                    {Object.keys(errors).map((fieldName) => (
                         <div key={fieldName}>
                             {Object.values(errors[fieldName]).map(
                                 (message, i) => (
                                     <p key={`${fieldName}-${i}`}>{message}</p>
-                                )
+                                ),
                             )}
                         </div>
-                    ))} */}
+                    ))}
                 </div>
                 <footer className="page-footer">
                     <div className="logo">
