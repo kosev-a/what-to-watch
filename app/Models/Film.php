@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Enums\FilmStatusEnum;
 
 class Film extends Model
 {
@@ -15,6 +16,13 @@ class Film extends Model
     public const STATUS_PENDING = 'pending';
     public const STATUS_ON_MODERATION = 'moderate';
     public const STATUS_READY = 'ready';
+
+    protected function casts()
+    {
+        return [
+            'status' => FilmStatusEnum::class,
+        ];
+    }
     
     protected $fillable = [
         'imdb_id',

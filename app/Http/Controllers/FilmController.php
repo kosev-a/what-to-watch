@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddFilmRequest;
+use App\Http\Requests\EditFilmRequest;
 use App\Http\Resources\FilmResource;
 use App\Http\Resources\ModerateFilmCollection;
 use App\Http\Resources\EditFilmResource;
@@ -58,13 +59,60 @@ class FilmController extends Controller
         return new FilmResource($film);
     }
 
-    // /**
-    //  * Update the specified resource in storage.
-    //  */
-    // public function update(Request $request, string $id)
-    // {
-    //     //
-    // }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(EditFilmRequest $request, string $id)
+    {
+        // $params = $request->safe()->except('background_image');
+        $film = Film::findOrFail($id);
+        Debugbar::info($request);
+        // $film = Film::first($id);
+
+        // $file = $request->file('backgroundImage');
+
+        // $film->imdb_id = $params['imdbId'];
+        // $film->title = $params['title'];
+        
+        // if($params['posterImage']) {
+        //     $film->poster_image = $params['posterImage'];
+        // }
+        
+        // if($params['previewImage']) {
+        //     $film->preview_image = $params['previewImage'];
+        // }
+        
+        // if($params['background_color']) {
+        //     $film->preview_image = $params['previewImage'];
+        // }
+            
+            // 'background_image' => ['string', 'max:255'],
+            // 'background_color' => ['string', 'max:9'],
+            // 'director' => ['string', 'max:255'],
+            // 'run_time' => ['int'],
+            // 'released' => ['int'],
+            // 'video_link' => ['string', 'max:255'],
+            // 'preview_video_link' => ['string', 'max:255'],
+            // 'description' => ['string', 'max:1000'],
+            // 'isPromo' => ['boolean'],
+            // 'actors' => ['array'],
+            // 'genres' => ['array'],
+            // 'status' => ['required', Rule::enum(FilmStatusEnum::class)],
+
+        // if ($file) {
+        //     $path = $file->store('images', 'public');
+        //     $user->avatar_path = $path;
+        // }
+
+        // $film->save();
+
+        // return $this->success([
+        //     'film' => $film,
+        // ], 200);
+        return $this->success([
+            'film' => $film,
+        ], 200);
+    }
 
     // /**
     //  * Remove the specified resource from storage.
@@ -76,7 +124,7 @@ class FilmController extends Controller
 
     public function getModeration(): ModerateFilmCollection
     {
-        $films = Film::get()->whereIn('status', ['moderate', 'pending']);
+        $films = Film::whereIn('status', ['moderate', 'pending'])->get();
         
         return new ModerateFilmCollection($films);
     }
