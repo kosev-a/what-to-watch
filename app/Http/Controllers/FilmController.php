@@ -67,6 +67,12 @@ class FilmController extends Controller
      */
     public function update(EditFilmRequest $request, string $id)
     {
+        
+        if ($request->user()->cannot('create', Film::class)) {
+
+            return response()->json(['message' => 'Действие доступно только администратору'], 403);
+        }
+        
         $params = $request->safe()->except('backgroundImage');
         $file = $request->file('backgroundImage');
         Debugbar::info($file);
@@ -136,9 +142,7 @@ class FilmController extends Controller
         $film->genres()->sync($genresIds);
         $film->actors()->sync($actorsIds);
 
-        return $this->success([
-            'film' => $film,
-        ], 200);
+        return $this->success(null, 204);
     }
 
     // /**

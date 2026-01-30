@@ -93,21 +93,9 @@ function EditMovie() {
             });
     }, [data]);
 
-    // const [file, setFile] = useState(null);
-    const [fileName, setFileName] = useState("Файл не выбран");
-    const [isSelected, setIsSelected] = useState(false);
-
     //обработчик добавления изображения
     const handleFileChange = (e) => {
-        setDataMovie({...dataMovie, backgroundImage: e.target.files[0]});
-        // console.log(e.target.files[0]);
-        // if (dataMovie.backgroundImage) {
-        //     setFileName(dataMovie.backgroundImage.name);
-            // setIsSelected(true);
-        // } else {
-        //     setFileName("Файл не выбран");
-            // setIsSelected(false);
-        // }
+        setDataMovie({ ...dataMovie, backgroundImage: e.target.files[0] });
     };
 
     // Обработчик изменения статуса "promo"
@@ -164,25 +152,25 @@ function EditMovie() {
             return result;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["film", dataMovie.id],
-            }); // Инвалидация кэша после успеха
+            queryClient.invalidateQueries({ queryKey: ["film", dataMovie.id], }); // Инвалидация кэша после успеха
             setErrorMessage("");
             setMessage("Данные успешно отправлены");
-            // setTimeout(() => {
-            //     navigate.goBack();
-            // }, 2000);
+            setTimeout(() => {
+                navigate.goBack();
+            }, 2000);
         },
         onError: (err) => {
             if (err.response) {
                 // Сервер ответил, но статус ошибки (например 422)
                 const { message, errors: validationErrors } = err.response.data;
-                setErrorMessage(
-                    message || "Произошла ошибка при отправке формы.",
-                );
-                if (validationErrors) {
+                if (!!validationErrors) {
                     setErrors(validationErrors); // Устанавливаем ошибки по полям
                     setMessage("");
+                    setErrorMessage("");
+                } else {
+                    setErrorMessage(
+                        message || "Произошла ошибка при отправке формы.",
+                    );
                 }
             } else if (err.request) {
                 // Запрос был сделан, но ответ не получен (сеть, 500 ошибка)
@@ -548,7 +536,13 @@ function EditMovie() {
                                         <label htmlFor="backgroundImage">
                                             Set background image
                                         </label>
-                                        {dataMovie.backgroundImage ? <p>{dataMovie.backgroundImage.name}</p> : <p>Файл не выбран</p>}
+                                        {dataMovie.backgroundImage ? (
+                                            <p>
+                                                {dataMovie.backgroundImage.name}
+                                            </p>
+                                        ) : (
+                                            <p>Файл не выбран</p>
+                                        )}
                                         <input
                                             className="visually-hidden"
                                             type="file"
@@ -621,6 +615,7 @@ function EditMovie() {
                         </form>
                     )}
                     <p>{message}</p>
+                    <p>{errorMessage}</p>
                     {/* отображение ошибок валидации */}
                     {Object.keys(errors).map((fieldName) => (
                         <div key={fieldName}>

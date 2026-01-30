@@ -38,7 +38,7 @@ class FilmPolicy
      */
     public function update(User $user, Film $film): bool
     {
-        return false;
+        return $user->is_admin;
     }
 
     /**
