@@ -44,8 +44,6 @@ function Profile(props) {
                 imdbId: imdbId,
             });
             console.log("Данные успешно отправлены:", response.data);
-            // const data = response.data.data;
-            // console.log(data);
 
             setMessage("IMDB id фильма успешно добавлен в базу");
             setErrorAddingFilm(null);
@@ -58,7 +56,7 @@ function Profile(props) {
                 const { message, errors: validationErrors } = err.response.data;
                 setErrorAddingFilm(
                     message ||
-                        "Произошла ошибка при добавлении ID фильма в базу."
+                        "Произошла ошибка при добавлении ID фильма в базу.",
                 );
                 if (validationErrors) {
                     setErrors(validationErrors);
@@ -68,7 +66,7 @@ function Profile(props) {
                 setMessage("");
                 // Запрос был сделан, но ответ не получен (сеть, 500 ошибка)
                 setErrorAddingFilm(
-                    "Ошибка сети или сервера. Попробуйте позже."
+                    "Ошибка сети или сервера. Попробуйте позже.",
                 );
             } else {
                 setMessage("");
@@ -234,9 +232,9 @@ function Profile(props) {
                                     data.is_admin && data.is_admin !== "Loading"
                                         ? "Администратор"
                                         : !data.is_admin &&
-                                          data.is_admin !== "Loading"
-                                        ? "Пользователь"
-                                        : "Loading..."
+                                            data.is_admin !== "Loading"
+                                          ? "Пользователь"
+                                          : "Loading..."
                                 }`}</p>
                             )}
                             <div className="user-profile__profile_buttons">
@@ -257,45 +255,53 @@ function Profile(props) {
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <form onSubmit={handleSubmit} className="sign-in__form">
-                            <div className="sign-in__fields">
-                                <div className="sign-in__field">
-                                    <p className="add_movie_text">
-                                        Add a movie to the database
-                                    </p>
-                                    <input
-                                        className="sign-in__input"
-                                        type="text"
-                                        placeholder="Enter IMDB id"
-                                        name="imdbId"
-                                        id="imdbId"
-                                        onChange={handleChange}
-                                        value={imdbId}
-                                    />
-                                    <label
-                                        className="sign-in__label visually-hidden"
-                                        htmlFor="imdbId"
-                                    >
-                                        Add a movie
-                                    </label>
+                    {data.is_admin && (
+                        <div>
+                            <form
+                                onSubmit={handleSubmit}
+                                className="sign-in__form"
+                            >
+                                <div className="sign-in__fields">
+                                    <div className="sign-in__field">
+                                        <p className="add_movie_text">
+                                            Add a movie to the database
+                                        </p>
+                                        <input
+                                            className="sign-in__input"
+                                            type="text"
+                                            placeholder="Enter IMDB id"
+                                            name="imdbId"
+                                            id="imdbId"
+                                            onChange={handleChange}
+                                            value={imdbId}
+                                        />
+                                        <label
+                                            className="sign-in__label visually-hidden"
+                                            htmlFor="imdbId"
+                                        >
+                                            Add a movie
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="sign-in__submit">
-                                <button className="sign-in__btn" type="submit">
-                                    OK
-                                </button>
-                            </div>
-                        </form>
-                        {message}
-                        {errorAddingFilm}
-                        <Link
-                            to="/movie-moderation"
-                            className="user-profile__link user-profile__moderation-movie-link"
-                        >
-                            Movie moderation
-                        </Link>
-                    </div>
+                                <div className="sign-in__submit">
+                                    <button
+                                        className="sign-in__btn"
+                                        type="submit"
+                                    >
+                                        OK
+                                    </button>
+                                </div>
+                            </form>
+                            {message}
+                            {errorAddingFilm}
+                            <Link
+                                to="/movie-moderation"
+                                className="user-profile__link user-profile__moderation-movie-link"
+                            >
+                                Movie moderation
+                            </Link>
+                        </div>
+                    )}
                 </div>
 
                 <MyList films={films} />
