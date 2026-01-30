@@ -8,6 +8,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Enums\FilmStatusEnum;
 
 
 class AddFimls implements ShouldQueue
@@ -27,7 +28,7 @@ class AddFimls implements ShouldQueue
      */
     public function handle(): void
     {
-        Film::where('status', Film::STATUS_PENDING)->chunk(1000, function ($films) {
+        Film::where('status', FilmStatusEnum::Pending)->chunk(1000, function ($films) {
             /** @var Film $film */
             foreach ($films as $film) {
                 AddFilm::dispatch($film);

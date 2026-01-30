@@ -7,8 +7,11 @@ use App\Http\Requests\EditFilmRequest;
 use App\Http\Resources\FilmResource;
 use App\Http\Resources\ModerateFilmCollection;
 use App\Http\Resources\EditFilmResource;
+use App\Enums\FilmStatusEnum;
 // use App\Http\Resources\ModerateFilmResource;
+use App\Models\Actor;
 use App\Models\Film;
+use App\Models\Genre;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
@@ -64,51 +67,75 @@ class FilmController extends Controller
      */
     public function update(EditFilmRequest $request, string $id)
     {
-        // $params = $request->safe()->except('background_image');
+        $params = $request->safe()->except('backgroundImage');
+        $file = $request->file('backgroundImage');
+        Debugbar::info($file);
         $film = Film::findOrFail($id);
-        Debugbar::info($request);
-        // $film = Film::first($id);
 
-        // $file = $request->file('backgroundImage');
+        $film->imdb_id = $params['imdbId'];
+        $film->title = $params['title'];
+        
+        if($params['posterImage']) {
+            $film->poster_image = $params['posterImage'];
+        }
+        
+        if($params['previewImage']) {
+            $film->preview_image = $params['previewImage'];
+        }
+        
+        if($params['backgroundColor']) {
+            $film->background_color = $params['backgroundColor'];
+        }
 
-        // $film->imdb_id = $params['imdbId'];
-        // $film->title = $params['title'];
-        
-        // if($params['posterImage']) {
-        //     $film->poster_image = $params['posterImage'];
-        // }
-        
-        // if($params['previewImage']) {
-        //     $film->preview_image = $params['previewImage'];
-        // }
-        
-        // if($params['background_color']) {
-        //     $film->preview_image = $params['previewImage'];
-        // }
+        if($params['director']) {
+            $film->director = $params['director'];
+        }
+
+        if($params['runTime']) {
+            $film->run_time = $params['runTime'];
+        }
+
+        if($params['released']) {
+            $film->released = $params['released'];
+        }
+
+        if($params['videoLink']) {
+            $film->video_link = $params['videoLink'];
+        }
+
+        if($params['previewVideoLink']) {
+            $film->preview_video_link = $params['previewVideoLink'];
+        }
+
+        if($params['description']) {
+            $film->description = $params['description'];
+        }
             
-            // 'background_image' => ['string', 'max:255'],
-            // 'background_color' => ['string', 'max:9'],
-            // 'director' => ['string', 'max:255'],
-            // 'run_time' => ['int'],
-            // 'released' => ['int'],
-            // 'video_link' => ['string', 'max:255'],
-            // 'preview_video_link' => ['string', 'max:255'],
-            // 'description' => ['string', 'max:1000'],
-            // 'isPromo' => ['boolean'],
-            // 'actors' => ['array'],
-            // 'genres' => ['array'],
-            // 'status' => ['required', Rule::enum(FilmStatusEnum::class)],
+        $film->is_promo = $params['isPromo'];
 
-        // if ($file) {
-        //     $path = $file->store('images', 'public');
-        //     $user->avatar_path = $path;
-        // }
+        $film->status = $params['status'];
 
-        // $film->save();
+        if($file) {
+            $path = $file->store('images/background_images', 'public');
+            $film->background_image = $path;
+        }
 
-        // return $this->success([
-        //     'film' => $film,
-        // ], 200);
+        $genresIds = [];
+        $genres = $params['genres'];
+        foreach ($genres as $genre) {
+            $genresIds[] = Genre::firstOrCreate(['name' => $genre])->id;
+        }
+
+        $actorsIds = [];
+        $actors = $params['actors'];
+        foreach ($actors as $actor) {
+            $actorsIds[] = Actor::firstOrCreate(['name' => $actor])->id;
+        }
+
+        $film->save();
+        $film->genres()->sync($genresIds);
+        $film->actors()->sync($actorsIds);
+
         return $this->success([
             'film' => $film,
         ], 200);

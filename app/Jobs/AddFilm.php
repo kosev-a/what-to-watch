@@ -14,6 +14,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use App\Enums\FilmStatusEnum;
 use Illuminate\Support\Facades\Log;
 
 class AddFilm implements ShouldQueue
@@ -33,15 +34,12 @@ class AddFilm implements ShouldQueue
     {
         // Получение информации
         $data = $repository->getFilm($this->film->imdb_id);
-        // Log::info($data);
 
         if(empty($data)) {
             throw new FilmsRepositoryException('Отсутствуют данные для обновления');
         }
 
         $this->film = $data['film'];
-
-        // Log::info($this->film);
 
         DB::beginTransaction();
 
@@ -57,10 +55,10 @@ class AddFilm implements ShouldQueue
             $actorsIds[] = Actor::firstOrCreate(['name' => $actor])->id;
         }
 
-        $this->film->status = Film::STATUS_ON_MODERATION;
+        $this->film->status = FilmStatusEnum::Moderate;
         $this->film->save();
-        $this->film->genres()->attach($genresIds);
-        $this->film->actors()->attach($actorsIds);
+        $this->film->genres()->sync($genresIds);
+        $this->film->actors()->sync($actorsIds);
 
         DB::commit();
 
