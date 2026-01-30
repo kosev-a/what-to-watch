@@ -93,20 +93,21 @@ function EditMovie() {
             });
     }, [data]);
 
-    const [file, setFile] = useState(null);
+    // const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState("Файл не выбран");
     const [isSelected, setIsSelected] = useState(false);
 
     //обработчик добавления изображения
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-        if (file) {
-            setFileName(file.name);
-            setIsSelected(true);
-        } else {
-            setFileName("Файл не выбран");
-            setIsSelected(false);
-        }
+        setDataMovie({...dataMovie, backgroundImage: e.target.files[0]});
+        // console.log(e.target.files[0]);
+        // if (dataMovie.backgroundImage) {
+        //     setFileName(dataMovie.backgroundImage.name);
+            // setIsSelected(true);
+        // } else {
+        //     setFileName("Файл не выбран");
+            // setIsSelected(false);
+        // }
     };
 
     // Обработчик изменения статуса "promo"
@@ -143,7 +144,7 @@ function EditMovie() {
             const formData = new FormData();
             //добавление данных в formData
             formData.append("payload", JSON.stringify(fetchData));
-            formData.append("image", file);
+            formData.append("backgroundImage", dataMovie.backgroundImage);
 
             // стандартный механизм подмены метода (Method Spoofing) - важнейший шаг для Laravel:
             formData.append("_method", "PATCH");
@@ -197,12 +198,6 @@ function EditMovie() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        //преобразование в массив actors и genres
-        // const fetchData = {
-        //     ...dataMovie,
-        //     actors: getArrayFromStr(dataMovie.actors),
-        //     genres: getArrayFromStr(dataMovie.genres),
-        // };
         console.log(dataMovie);
         mutation.mutate({
             imdbId: dataMovie.imdbId,
@@ -553,14 +548,13 @@ function EditMovie() {
                                         <label htmlFor="backgroundImage">
                                             Set background image
                                         </label>
-                                        <p>{fileName}</p>
+                                        {dataMovie.backgroundImage ? <p>{dataMovie.backgroundImage.name}</p> : <p>Файл не выбран</p>}
                                         <input
                                             className="visually-hidden"
                                             type="file"
                                             name="backgroundImage"
                                             id="backgroundImage"
                                             onChange={handleFileChange}
-                                            value={dataMovie.backgroundImage}
                                         />
                                     </div>
                                     <div className="movie-edit__field-right">
@@ -627,7 +621,6 @@ function EditMovie() {
                         </form>
                     )}
                     <p>{message}</p>
-                    <p>{errorMessage}</p>
                     {/* отображение ошибок валидации */}
                     {Object.keys(errors).map((fieldName) => (
                         <div key={fieldName}>

@@ -13,10 +13,6 @@ class Film extends Model
 {
     use HasFactory;
 
-    public const STATUS_PENDING = 'pending';
-    public const STATUS_ON_MODERATION = 'moderate';
-    public const STATUS_READY = 'ready';
-
     protected function casts()
     {
         return [
